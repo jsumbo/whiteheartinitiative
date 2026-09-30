@@ -1,0 +1,53 @@
+{
+  "heading": "Let's connect",
+  "intro": "Follow our work and reach out on any of our platforms:",
+  "helpIntro": "Our programmes run on the generosity of partners, donors and volunteers. Here is what helps us reach more children.",
+  "helpGroups": [
+    {
+      "title": "Learning Materials and Art/Entertainment Items",
+      "items": [
+        "Whiteboards",
+        "Packs of markers",
+        "Notebooks",
+        "Pens and pencils",
+        "Poster sheets",
+        "Flip charts"
+      ],
+      "text": ""
+    },
+    {
+      "title": "Technology for Learning",
+      "items": [
+        "Projector and screen",
+        "Tablets",
+        "Laptops",
+        "Internet router"
+      ],
+      "text": ""
+    },
+    {
+      "title": "Food and Drinks for Children",
+      "items": [
+        "Sachets of water",
+        "Juices",
+        "Snacks"
+      ],
+      "text": ""
+    },
+    {
+      "title": "Volunteer Mentors",
+      "items": [],
+      "text": "We welcome mentors who want to invest their time and experience in the next generation."
+    },
+    {
+      "title": "Programme Space (longer-term need)",
+      "items": [],
+      "text": "A space to engage children in training, fun and learning activities."
+    }
+  ],
+  "helpButtons": [
+    "Donate",
+    "Become a Volunteer Mentor",
+    "Partner With Us"
+  ]
+}
