@@ -2,8 +2,8 @@ import { getSettings } from "@/lib/content";
 import { LogoLight } from "./Logo";
 import { SocialLinks } from "./SocialLinks";
 
-export function Footer() {
-  const { handle } = getSettings();
+export async function Footer() {
+  const { handle } = await getSettings();
   return (
     <footer className="bg-forest-deep text-white">
       <div className="wrap grid gap-8 py-12 md:grid-cols-[1fr_auto]">

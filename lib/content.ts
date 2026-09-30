@@ -1,21 +1,6 @@
-import fs from "node:fs";
-import path from "node:path";
+import { store, type Data } from "@/lib/store";
 
-// All site text lives in /content as JSON, edited through the CMS at /admin.
-const root = path.join(process.cwd(), "content");
-
-function readJson<T>(file: string): T {
-  return JSON.parse(fs.readFileSync(path.join(root, file), "utf8")) as T;
-}
-
-function readFolder<T>(dir: string): (T & { slug: string })[] {
-  const full = path.join(root, dir);
-  if (!fs.existsSync(full)) return [];
-  return fs
-    .readdirSync(full)
-    .filter((f) => f.endsWith(".json"))
-    .map((f) => ({ ...readJson<T>(path.join(dir, f)), slug: f.replace(/\.json$/, "") }));
-}
+// Reads site content for the public pages. Everything here is edited in the admin at /admin.
 
 export type Settings = {
   email: string;
@@ -41,8 +26,6 @@ export type Home = {
   ctaDonateButton: string;
 };
 
-export type TeamMember = { slug: string; name: string; position: string; order?: number; photo?: string; photoAlt?: string };
-
 export type About = {
   heroImage: string;
   heroImageAlt: string;
@@ -65,52 +48,56 @@ export type Contact = {
   helpButtons: string[];
 };
 
-export type Program = {
-  slug: string;
-  title: string;
-  order: number;
-  image: string;
-  imageAlt: string;
-  description: string;
-};
+export type Program = { id: string; slug: string; title: string; image: string; imageAlt: string; description: string };
+export type TeamMember = { id: string; name: string; position: string; photo?: string; photoAlt?: string };
+export type Photo = { id: string; image: string; alt: string; program?: string; date: string };
 
-export type Photo = {
-  slug: string;
-  image: string;
-  alt: string;
-  program?: string;
-  date: string;
-};
+const doc = async <T,>(key: string) => ((await store.getDoc(key)) ?? {}) as T;
 
-export const getSettings = () => readJson<Settings>("settings.json");
-export const getHome = () => readJson<Home>("home.json");
-export const getAbout = () => readJson<About>("about.json");
-export const getContact = () => readJson<Contact>("contact.json");
-export const getProgramsPage = () => readJson<{ intro: string }>("programs-page.json");
-export const getGalleryPage = () => readJson<{ intro: string }>("gallery-page.json");
+export const getSettings = () => doc<Settings>("settings").then((s) => ({ ...s, social: s.social ?? ({} as Settings["social"]) }));
+export const getHome = () => doc<Home>("home");
+export const getAbout = () => doc<About>("about").then((a) => ({ ...a, mission: a.mission ?? [] }));
+export const getContact = () =>
+  doc<Contact>("contact").then((c) => ({ ...c, helpGroups: c.helpGroups ?? [], helpButtons: c.helpButtons ?? [] }));
+export const getProgramsPage = () => doc<{ intro: string }>("programsPage");
+export const getGalleryPage = () => doc<{ intro: string }>("galleryPage");
 
-export function getPrograms(): Program[] {
-  return readFolder<Omit<Program, "slug">>("programs").sort(
-    (a, b) => (a.order ?? 99) - (b.order ?? 99) || a.title.localeCompare(b.title),
-  );
+const str = (d: Data, k: string) => (typeof d[k] === "string" ? (d[k] as string) : "");
+
+export const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
+export async function getPrograms(): Promise<Program[]> {
+  return (await store.listItems("programs")).map(({ id, data }) => ({
+    id,
+    slug: slugify(str(data, "title")) || id,
+    title: str(data, "title"),
+    image: str(data, "image"),
+    imageAlt: str(data, "imageAlt"),
+    description: str(data, "description"),
+  }));
 }
 
-export function getTeam(): TeamMember[] {
-  return readFolder<Omit<TeamMember, "slug">>("team").sort(
-    (a, b) => (a.order ?? 99) - (b.order ?? 99) || a.name.localeCompare(b.name),
-  );
+export async function getTeam(): Promise<TeamMember[]> {
+  return (await store.listItems("team")).map(({ id, data }) => ({
+    id,
+    name: str(data, "name"),
+    position: str(data, "position"),
+    photo: str(data, "photo"),
+    photoAlt: str(data, "photoAlt"),
+  }));
 }
 
-// Splits text from a multi-line CMS field into paragraphs.
+export async function getPhotos(): Promise<Photo[]> {
+  return (await store.listItems("gallery"))
+    .map(({ id, data }) => ({ id, image: str(data, "image"), alt: str(data, "alt"), program: str(data, "program"), date: str(data, "date") }))
+    .filter((p) => p.image)
+    .sort((a, b) => b.date.localeCompare(a.date));
+}
+
+// Splits text from a multi-line field into paragraphs.
 export const paragraphs = (text = "") => text.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
 
-export function getPhotos(): Photo[] {
-  return readFolder<Omit<Photo, "slug">>("gallery").sort((a, b) =>
-    String(b.date).localeCompare(String(a.date)),
-  );
-}
-
-export const isPlaceholder = (value: string) => !value || value.includes("PLACEHOLDER");
+export const isPlaceholder = (value?: string) => !value || value.includes("PLACEHOLDER");
 
 export const socialLabels = {
   instagram: "Instagram",
@@ -122,5 +109,4 @@ export const socialLabels = {
 } as const;
 
 // Maps a help button label to the anchor used to prefill the contact form.
-export const topicId = (label: string) =>
-  "form-" + label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+export const topicId = (label: string) => "form-" + slugify(label);

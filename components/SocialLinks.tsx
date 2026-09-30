@@ -1,7 +1,7 @@
 import { getSettings, socialLabels } from "@/lib/content";
 
-export function SocialLinks({ className = "" }: { className?: string }) {
-  const { social } = getSettings();
+export async function SocialLinks({ className = "" }: { className?: string }) {
+  const { social } = await getSettings();
   const entries = (Object.keys(socialLabels) as (keyof typeof socialLabels)[]).filter((k) => social[k]);
   return (
     <ul className={`flex flex-wrap gap-x-4 gap-y-2 ${className}`}>

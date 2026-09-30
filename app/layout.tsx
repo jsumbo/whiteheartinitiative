@@ -1,7 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo, Lora } from "next/font/google";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
 import "./globals.css";
 
 const archivo = Archivo({ variable: "--font-archivo", subsets: ["latin"], display: "swap" });
@@ -29,14 +27,7 @@ export const viewport: Viewport = { themeColor: "#0b3d0b" };
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${archivo.variable} ${lora.variable} antialiased`}>
-      <body className="flex min-h-screen flex-col">
-        <a href="#main" className="skip-link">Skip to content</a>
-        <Header />
-        <main id="main" className="flex-1">
-          {children}
-        </main>
-        <Footer />
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

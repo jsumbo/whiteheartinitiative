@@ -9,14 +9,6 @@ const nextConfig: NextConfig = {
     deviceSizes: [480, 640, 828, 1080, 1280, 1600, 1920],
     minimumCacheTTL: 60 * 60 * 24 * 30,
   },
-  async headers() {
-    return [
-      {
-        source: "/uploads/:path*",
-        headers: [{ key: "Cache-Control", value: "public, max-age=2592000" }],
-      },
-    ];
-  },
 };
 
 export default nextConfig;
