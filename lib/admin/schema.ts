@@ -65,7 +65,7 @@ export const docs: DocDef[] = [
       { type: "text", name: "headline", label: "Main heading", required: true, hint: "The big heading at the top of the home page." },
       { type: "text", name: "tagline", label: "Tagline", hint: "Short line under the heading, shown in italics." },
       { type: "textarea", name: "intro", label: "Intro line", hint: "One or two sentences that say what White Heart Initiative does." },
-      { type: "image", name: "heroImage", label: "Top photo", hint: "Large photo behind the heading. Pick a wide (landscape) photo. Big files are fine, the site shrinks them for phones." },
+      { type: "image", name: "heroImage", label: "Top photo", hint: "Large photo behind the heading. Pick a wide (landscape) photo.." },
       photoAlt("heroImageAlt", "Children in school uniform sitting on benches outdoors."),
       { type: "text", name: "primaryButton", label: "First button text", hint: "Takes people to the 'How you can help' section." },
       { type: "text", name: "secondaryButton", label: "Second button text", hint: "Takes people to the About page." },
@@ -170,7 +170,7 @@ export const collections: CollectionDef[] = [
     imageField: "image",
     sort: "date",
     fields: [
-      { type: "image", name: "image", label: "Photo", required: true, hint: "Upload the photo. Big files are fine, the site shrinks them for phones." },
+      { type: "image", name: "image", label: "Photo", required: true, hint: "Upload the photo." },
       photoAlt("alt", "Children lining up for a health check outside a school."),
       { type: "program", name: "program", label: "Program", hint: "Optional. Pick the program this photo belongs to so visitors can filter by it." },
       { type: "date", name: "date", label: "Date taken", required: true, hint: "Roughly when the photo was taken. Used to sort the gallery." },

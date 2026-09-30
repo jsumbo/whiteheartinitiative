@@ -70,9 +70,6 @@ export default async function HomePage() {
               </li>
             ))}
           </ul>
-          <Link href="/programs" className="mt-8 inline-block font-bold text-forest underline decoration-gold decoration-2 underline-offset-4">
-            See all programs
-          </Link>
         </div>
       </section>
 
