@@ -24,7 +24,7 @@ export default async function Dashboard() {
       </ul>
 
       <h2 className="mt-8 mb-3 text-sm font-bold tracking-[0.15em] text-stone-600 uppercase">Pages and settings</h2>
-      <ul className="grid gap-3 sm:grid-cols-2">
+      <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {docs.map((d) => (
           <li key={d.key}>
             <Link href={`/admin/pages/${d.key}`} className="block h-full border-2 border-stone-200 bg-white p-4 hover:border-forest">

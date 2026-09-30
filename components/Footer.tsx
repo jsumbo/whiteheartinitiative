@@ -20,7 +20,7 @@ export async function Footer() {
         <div className="wrap flex flex-wrap justify-between gap-2 py-4 text-sm text-white/75">
           <p>&copy; {new Date().getFullYear()} White Heart Initiative. All rights reserved.</p>
           <p>
-            Design by{" "}
+            Developed and Designed by{" "}
             <a href="https://heyjay.netlify.app/" className="underline underline-offset-4 hover:text-gold-light">
               Oudeis
             </a>
