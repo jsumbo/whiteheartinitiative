@@ -7,9 +7,9 @@ import { useState } from "react";
 const links = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
-  { href: "/programs", label: "Programs" },
-  { href: "/gallery", label: "Gallery" },
-  { href: "/contact", label: "Contact" },
+  { href: "/projects", label: "Projects" },
+  { href: "/media", label: "Media" },
+  { href: "/support", label: "Support Us", cta: true },
 ];
 
 export function MainNav() {
@@ -33,16 +33,20 @@ export function MainNav() {
         id="main-menu"
         className={`${open ? "flex" : "hidden"} absolute inset-x-0 top-full z-20 flex-col border-b-4 border-forest bg-white px-4 pb-4 shadow-lg md:static md:border-0 md:shadow-none md:flex md:flex-row md:gap-1 md:p-0`}
       >
-        {links.map(({ href, label }) => {
+        {links.map(({ href, label, cta }) => {
           const current = href === "/" ? pathname === "/" : pathname.startsWith(href);
           return (
-            <li key={href}>
+            <li key={href} className={cta ? "mt-3 md:mt-0 md:ml-2" : ""}>
               <Link
                 href={href}
                 aria-current={current ? "page" : undefined}
-                className={`block border-b border-forest/15 py-3 text-lg font-bold text-forest md:border-b-4 md:px-3 md:py-2 md:text-base ${
-                  current ? "md:border-gold" : "md:border-transparent hover:text-olive"
-                }`}
+                className={
+                  cta
+                    ? `block bg-gold px-4 py-3 text-center text-lg font-bold text-ink hover:bg-gold-light md:py-2 md:text-base ${current ? "outline-2 outline-offset-2 outline-forest" : ""}`
+                    : `block border-b border-forest/15 py-3 text-lg font-bold text-forest md:border-b-4 md:px-3 md:py-2 md:text-base ${
+                        current ? "md:border-gold" : "md:border-transparent hover:text-olive"
+                      }`
+                }
               >
                 {label}
               </Link>

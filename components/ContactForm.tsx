@@ -8,7 +8,7 @@ export function ContactForm({ topics }: { topics: { id: string; label: string }[
   const [status, setStatus] = useState<Status>({ kind: "idle" });
   const messageRef = useRef<HTMLTextAreaElement>(null);
 
-  // Buttons like "Donate Items" link to #form-donate-items. Prefill the message and move focus to the form.
+  // Links like "Talk to us about partnering" go to #form-partner-with-us. Prefill the message and move focus to the form.
   useEffect(() => {
     function applyHash() {
       const topic = topics.find((t) => `#${t.id}` === window.location.hash);

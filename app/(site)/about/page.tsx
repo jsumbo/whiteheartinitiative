@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { ContactForm } from "@/components/ContactForm";
 import { PhotoBanner } from "@/components/PhotoBanner";
-import { getAbout, getTeam } from "@/lib/content";
+import { SocialLinks } from "@/components/SocialLinks";
+import { telHref, Value } from "@/components/Value";
+import { getAbout, getSettings, getTeam, topicId } from "@/lib/content";
 import { pageMetadata } from "@/lib/site";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -9,7 +12,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
-  const [about, team] = await Promise.all([getAbout(), getTeam()]);
+  const [about, team, settings] = await Promise.all([getAbout(), getTeam(), getSettings()]);
+  // Links like "Talk to us about partnering" open the form with the topic filled in.
+  const topics = ["Partner With Us", "Volunteer"].map((label) => ({ id: topicId(label), label }));
   return (
     <>
       <PhotoBanner image={about.heroImage} alt={about.heroImageAlt} preload>
@@ -78,6 +83,42 @@ export default async function AboutPage() {
           </div>
         </section>
       )}
+
+      <section id="contact" aria-labelledby="contact-title" className="scroll-mt-4">
+        <div className="bg-forest text-white">
+          <div className="wrap py-14 md:py-20">
+            <h2 id="contact-title" className="display">{(about.contactHeading || "let's connect").toLowerCase().replace(/[.!]?$/, ".")}</h2>
+            <p className="prose-lg mt-6">
+              {about.contactIntro} <strong>{settings.handle}</strong>
+            </p>
+          </div>
+        </div>
+        <div className="wrap grid gap-12 py-14 md:grid-cols-[1fr_1.3fr] md:py-20">
+          <div>
+            <h3 className="text-3xl font-black text-forest">Contact details</h3>
+            <dl className="mt-6 grid gap-5">
+              {[
+                { label: "Email", value: settings.email, href: `mailto:${settings.email}` },
+                { label: "Phone / WhatsApp", value: settings.phone, href: telHref(settings.phone) },
+                { label: "Location", value: settings.location },
+              ].map((d) => (
+                <div key={d.label}>
+                  <dt className="text-sm font-bold tracking-[0.15em] text-olive uppercase">{d.label}</dt>
+                  <dd className="mt-1 text-lg">
+                    <Value value={d.value} label={d.label} href={d.href} />
+                  </dd>
+                </div>
+              ))}
+            </dl>
+            <h4 className="mt-10 text-sm font-bold tracking-[0.15em] text-olive uppercase">Social media</h4>
+            <SocialLinks className="mt-2 text-lg" />
+          </div>
+          <div id="contact-form" className="scroll-mt-4">
+            <h3 className="text-3xl font-black text-forest">Send us a message</h3>
+            <ContactForm topics={topics} />
+          </div>
+        </div>
+      </section>
     </>
   );
 }

@@ -2,21 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { inboxes } from "@/lib/admin/inbox";
+import { collections, docs } from "@/lib/admin/schema";
 
+// Built from the schema, so new pages and lists show up here without editing this file.
 const sections = [
-  { heading: "Pages", links: [
-    { href: "/admin/pages/home", label: "Home page" },
-    { href: "/admin/pages/about", label: "About page" },
-    { href: "/admin/pages/programsPage", label: "Programs intro" },
-    { href: "/admin/pages/galleryPage", label: "Gallery intro" },
-    { href: "/admin/pages/contact", label: "Contact page" },
-  ] },
-  { heading: "Lists", links: [
-    { href: "/admin/programs", label: "Programs" },
-    { href: "/admin/team", label: "Team" },
-    { href: "/admin/gallery", label: "Gallery" },
-  ] },
-  { heading: "Settings", links: [{ href: "/admin/pages/settings", label: "Contact details and social links" }] },
+  { heading: "Pages", links: docs.filter((d) => d.key !== "settings").map((d) => ({ href: `/admin/pages/${d.key}`, label: d.label })) },
+  { heading: "Lists", links: collections.map((c) => ({ href: `/admin/${c.name}`, label: c.label })) },
+  { heading: "Inbox", links: inboxes.map((b) => ({ href: `/admin/inbox/${b.name}`, label: b.label })) },
+  { heading: "Settings", links: docs.filter((d) => d.key === "settings").map((d) => ({ href: `/admin/pages/${d.key}`, label: d.label })) },
 ];
 
 export function AdminNav() {

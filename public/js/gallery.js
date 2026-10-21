@@ -18,7 +18,7 @@
       });
       var shown = 0;
       items.forEach(function (li) {
-        var match = value === "all" || li.getAttribute("data-program") === value;
+        var match = value === "all" || li.getAttribute("data-project") === value;
         li.hidden = !match;
         if (match) shown++;
       });

@@ -1,0 +1,20 @@
+{
+  "name": "Jumpstart",
+  "tagline": "Our mentorship programme for children",
+  "schedule": "Runs every quarter",
+  "next": "",
+  "image": "/uploads/stock-circle.jpg",
+  "imageAlt": "Children in purple and red school uniforms sitting on benches in a circle outdoors while one girl speaks.",
+  "description": "Jumpstart is White Heart Initiative's mentorship programme. It runs every quarter, and we currently work with more than 100 children.\n\nEach session follows our three focus areas: education, empowerment and health.",
+  "highlights": [
+    {
+      "value": "100+",
+      "label": "children in the programme"
+    },
+    {
+      "value": "4",
+      "label": "sessions a year"
+    }
+  ],
+  "order": 1
+}

@@ -1,0 +1,64 @@
+{
+  "intro": "Our programmes run on the generosity of partners, donors and volunteers. Here is what helps us reach more children.",
+  "volunteerIntro": "We welcome mentors who want to invest their time and experience in the next generation.",
+  "volunteerUrl": "",
+  "volunteerButton": "Sign up to volunteer",
+  "needsIntro": "These are the items that help us run our programmes all year.",
+  "needs": [
+    {
+      "title": "Learning Materials and Art/Entertainment Items",
+      "items": [
+        "Whiteboards",
+        "Packs of markers",
+        "Notebooks",
+        "Pens and pencils",
+        "Poster sheets",
+        "Flip charts"
+      ],
+      "text": ""
+    },
+    {
+      "title": "Technology for Learning",
+      "items": [
+        "Projector and screen",
+        "Tablets",
+        "Laptops",
+        "Internet router"
+      ],
+      "text": ""
+    },
+    {
+      "title": "Food and Drinks for Children",
+      "items": [
+        "Sachets of water",
+        "Juices",
+        "Snacks"
+      ],
+      "text": ""
+    },
+    {
+      "title": "Programme Space (longer-term need)",
+      "items": [],
+      "text": "A space to engage children in training, fun and learning activities."
+    }
+  ],
+  "partnerIntro": "Businesses, churches and organisations can support Freedom's Future by providing any of the following:",
+  "partnerOptions": [
+    {
+      "title": "Venue",
+      "text": "Provide or sponsor an event space for the programme."
+    },
+    {
+      "title": "Decoration",
+      "text": "Supply banners, backdrops, balloons and stage décor."
+    },
+    {
+      "title": "Games and entertainment",
+      "text": "Donate or lend sports equipment, musical instruments, face-painting and activity supplies."
+    },
+    {
+      "title": "Financial assistance",
+      "text": "Contribute toward logistics, meals, transportation and outreach items."
+    }
+  ]
+}

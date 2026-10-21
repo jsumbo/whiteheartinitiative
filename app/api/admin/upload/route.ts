@@ -5,7 +5,7 @@ import { slugify } from "@/lib/content";
 import { store } from "@/lib/store";
 
 const MAX_BYTES = 15 * 1024 * 1024;
-const TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"];
+const TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 // Saves an uploaded photo into the uploads folder. Large phone photos are shrunk
 // to at most 2400px wide and saved as JPEG so the folder stays small.
@@ -16,6 +16,10 @@ export async function POST(request: Request) {
   const form = await request.formData().catch(() => null);
   const file = form?.get("file");
   if (!(file instanceof File)) return fail("No photo was received.");
+  // The image library on the server cannot read iPhone HEIC photos. Phones convert them to JPG when uploading
+  // from the browser, so this mostly affects photos copied to a computer.
+  if (/hei[cf]/i.test(file.type) || /\.hei[cf]$/i.test(file.name))
+    return fail("HEIC photos cannot be used. Save the photo as JPG first, or upload it from your phone's browser.");
   if (!TYPES.includes(file.type)) return fail("Please upload a JPG, PNG or WebP photo.");
   if (file.size > MAX_BYTES) return fail("This photo is over 15 MB. Please pick a smaller one.");
 

@@ -11,7 +11,7 @@ export async function Footer() {
           <LogoLight className="h-16 w-auto md:h-20" />
         </div>
         <div>
-          <h2 className="mb-3 text-sm font-bold tracking-[0.2em] text-white/70">FOLLOW US</h2>
+          <h2 className="mb-3 text-sm font-bold tracking-[0.2em] text-white/70 uppercase">Follow us</h2>
           <SocialLinks />
           <p className="mt-3 font-bold">{handle}</p>
         </div>

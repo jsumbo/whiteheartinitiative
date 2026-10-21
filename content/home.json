@@ -6,10 +6,32 @@
   "heroImageAlt": "Children in purple and red school uniforms sitting on benches in a circle outdoors while one girl speaks.",
   "primaryButton": "Get Involved",
   "secondaryButton": "Learn More",
+  "stats": [
+    {
+      "value": "2",
+      "label": "Projects",
+      "icon": "projects"
+    },
+    {
+      "value": "4",
+      "label": "Freedom's Future events",
+      "icon": "events"
+    },
+    {
+      "value": "1,700+",
+      "label": "Children reached",
+      "icon": "children"
+    },
+    {
+      "value": "5",
+      "label": "Orphanages and churches",
+      "icon": "homes"
+    }
+  ],
   "ctaTitle": "get involved.",
   "ctaText": "Our programmes run on the generosity of partners, donors and volunteers. Here is what helps us reach more children.",
   "ctaImage": "/uploads/stock-creek-visit.jpg",
   "ctaImageAlt": "Children in red berets and purple shirts standing with a man beside a creek, one holding a woven basket.",
   "ctaVolunteerButton": "Become a Volunteer Mentor",
-  "ctaDonateButton": "Donate"
+  "ctaSupportButton": "Ways to support us"
 }

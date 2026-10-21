@@ -3,20 +3,23 @@ import Image from "next/image";
 import Link from "next/link";
 import { ButtonLink } from "@/components/ButtonLink";
 import { PhotoBanner } from "@/components/PhotoBanner";
-import { getAbout, getHome, getPhotos, getPrograms, getProgramsPage, paragraphs, topicId } from "@/lib/content";
+import { projectTheme } from "@/components/ProjectFeature";
+import { Stats } from "@/components/Stats";
+import { getAbout, getFocusAreas, getHome, getPhotos, getProjects, getProjectsPage, getSupport, paragraphs } from "@/lib/content";
 import { openGraph } from "@/lib/site";
 
 export const metadata: Metadata = { alternates: { canonical: "/" }, openGraph: { ...openGraph, url: "/" } };
 
 export default async function HomePage() {
-  const [home, about, programs, programsPage, allPhotos] = await Promise.all([
+  const [home, about, projects, focusAreas, projectsPage, allPhotos, support] = await Promise.all([
     getHome(),
     getAbout(),
-    getPrograms(),
-    getProgramsPage(),
+    getProjects(),
+    getFocusAreas(),
+    getProjectsPage(),
     getPhotos(),
+    getSupport(),
   ]);
-  const programsIntro = programsPage.intro;
   const photos = allPhotos.slice(0, 6);
 
   return (
@@ -28,7 +31,7 @@ export default async function HomePage() {
         <p className="tagline mt-4 text-xl text-gold-light md:text-2xl">{home.tagline}</p>
         <p className="mt-6 max-w-xl text-lg md:text-xl">{home.intro}</p>
         <div className="mt-8 grid gap-3 sm:flex sm:flex-wrap">
-          <ButtonLink href="/contact#help">{home.primaryButton}</ButtonLink>
+          <ButtonLink href="/support">{home.primaryButton}</ButtonLink>
           <ButtonLink href="/about" variant="outline">
             {home.secondaryButton}
             <span className="sr-only"> about us</span>
@@ -36,13 +39,15 @@ export default async function HomePage() {
         </div>
       </PhotoBanner>
 
+      <Stats stats={home.stats} />
+
       <section aria-labelledby="about-title" className="wrap py-14 md:py-20">
         <h2 id="about-title" className="display text-forest">about us.</h2>
         <div className="mt-8">
           {about.heading && <p className="mb-4 text-2xl font-bold text-forest">{about.heading}</p>}
           <p className="prose-lg">{about.body}</p>
           <Link href="/about" className="mt-6 inline-block font-bold text-forest underline decoration-gold decoration-2 underline-offset-4">
-            More about us
+            Learn more about us
           </Link>
         </div>
       </section>
@@ -54,21 +59,48 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section aria-labelledby="programs-title" className="bg-paper">
+      {projects.length > 0 && (
+        <section aria-labelledby="projects-title" className="wrap py-14 md:py-20">
+          <h2 id="projects-title" className="display text-forest">our projects.</h2>
+          <p className="prose-lg mt-6">{projectsPage.intro}</p>
+          <ul className="mt-10 grid gap-6 md:grid-cols-2 lg:gap-8">
+            {projects.map((p) => {
+              const t = projectTheme(p.slug);
+              return (
+                <li key={p.id} className={`flex min-w-0 flex-col ${t.bg} text-white`}>
+                  <div className="relative aspect-[16/9] w-full bg-olive">
+                    <Image src={p.image} alt={p.imageAlt} fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
+                  </div>
+                  <div className="@container flex flex-1 flex-col p-6 lg:p-8">
+                    {p.schedule && <p className={`text-sm font-bold tracking-[0.18em] uppercase ${t.accent}`}>{p.schedule}</p>}
+                    <h3 className="mt-2 text-[clamp(2rem,11cqi,3.5rem)] leading-none font-black tracking-tight">{p.name}</h3>
+                    <p className="mt-3 flex-1 text-lg">{p.tagline}</p>
+                    <Link href={`/projects#${p.slug}`} className={`mt-6 self-start font-bold underline decoration-2 underline-offset-4 ${t.accent}`}>
+                      Learn more about {p.name}
+                    </Link>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
+
+      <section aria-labelledby="focus-title" className="bg-paper">
         <div className="wrap py-14 md:py-20">
-          <h2 id="programs-title" className="display text-forest">what we do.</h2>
-          <p className="prose-lg mt-6">{programsIntro}</p>
+          <h2 id="focus-title" className="display text-forest">what we do.</h2>
+          <p className="prose-lg mt-6">{projectsPage.focusIntro}</p>
           <ul className="mt-10 grid gap-6 md:grid-cols-3 lg:gap-8">
-            {programs.map((p) => (
+            {focusAreas.map((p) => (
               <li key={p.id} className="flex min-w-0 flex-col border-t-4 border-gold bg-white">
                 <div className="relative aspect-[4/3] w-full bg-olive">
                   <Image src={p.image} alt={p.imageAlt} fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover" />
                 </div>
-                <div className="flex flex-1 flex-col p-5 lg:p-6">
-                  <h3 className="text-[clamp(1.75rem,9vw,2.25rem)] leading-none font-black tracking-tight break-words text-forest lowercase md:text-2xl lg:text-4xl">{p.title}</h3>
+                <div className="@container flex flex-1 flex-col p-5 lg:p-6">
+                  <h3 className="text-[clamp(1.25rem,12cqi,2.75rem)] leading-none font-black tracking-tight text-forest lowercase">{p.title}</h3>
                   <p className="mt-3 flex-1">{paragraphs(p.description)[0]}</p>
-                  <Link href={`/programs#${p.slug}`} className="mt-4 self-start font-bold text-forest underline decoration-gold decoration-2 underline-offset-4">
-                    More<span className="sr-only"> about {p.title}</span>
+                  <Link href={`/projects#${p.slug}`} className="mt-4 self-start font-bold text-forest underline decoration-gold decoration-2 underline-offset-4">
+                    Learn more<span className="sr-only"> about {p.title}</span>
                   </Link>
                 </div>
               </li>
@@ -95,7 +127,7 @@ export default async function HomePage() {
               </li>
             ))}
           </ul>
-          <Link href="/gallery" className="mt-8 inline-block font-bold text-forest underline decoration-gold decoration-2 underline-offset-4">
+          <Link href="/media#photos" className="mt-8 inline-block font-bold text-forest underline decoration-gold decoration-2 underline-offset-4">
             See all photos
           </Link>
         </section>
@@ -105,8 +137,8 @@ export default async function HomePage() {
         <h2 className="display">{home.ctaTitle}</h2>
         <p className="mt-6 max-w-2xl text-lg md:text-xl">{home.ctaText}</p>
         <div className="mt-8 grid gap-3 sm:flex sm:flex-wrap">
-          <ButtonLink href={`/contact#${topicId(home.ctaVolunteerButton)}`}>{home.ctaVolunteerButton}</ButtonLink>
-          <ButtonLink href={`/contact#${topicId(home.ctaDonateButton)}`} variant="outline">{home.ctaDonateButton}</ButtonLink>
+          <ButtonLink href={support.volunteerUrl || "/support#volunteer"}>{home.ctaVolunteerButton}</ButtonLink>
+          <ButtonLink href="/support" variant="outline">{home.ctaSupportButton}</ButtonLink>
         </div>
       </PhotoBanner>
     </>

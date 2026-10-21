@@ -4,32 +4,51 @@
 export type Field =
   | { type: "text" | "textarea" | "email" | "url" | "tel" | "date"; name: string; label: string; hint?: string; required?: boolean }
   | { type: "image"; name: string; label: string; hint?: string; required?: boolean }
+  | { type: "select"; name: string; label: string; hint?: string; required?: boolean; options: { value: string; label: string }[] }
+  // Picks an entry from another list, e.g. which project a photo belongs to.
+  | { type: "ref"; name: string; label: string; hint?: string; collection: CollectionName; emptyLabel: string }
   | { type: "list"; name: string; label: string; hint?: string; itemLabel: string }
-  | { type: "program"; name: string; label: string; hint?: string }
   | { type: "group"; name: string; label: string; hint?: string; fields: Field[] }
   | { type: "groupList"; name: string; label: string; hint?: string; itemLabel: string; fields: Field[] };
+
+export type CollectionName = "projects" | "focus" | "team" | "gallery" | "media";
 
 export type DocDef = { key: string; label: string; description: string; fields: Field[] };
 
 export type CollectionDef = {
-  name: "programs" | "team" | "gallery";
+  name: CollectionName;
   label: string;
   singular: string;
+  plural: string;
   description: string;
   titleField: string;
-  imageField: string;
+  imageField?: string;
   // "manual": editors set the order with arrows. "date": newest first.
   sort: "manual" | "date";
   fields: Field[];
 };
 
-const photoAlt = (name: string, example: string): Field => ({
+const photoAlt = (name: string, example: string, required = true): Field => ({
   type: "text",
   name,
   label: "Photo description",
-  required: true,
+  required,
   hint: `Not shown on the page. Screen readers read it out to people who cannot see the photo. Describe what is in it. Example: ${example}`,
 });
+
+const titleText = (itemLabel: string, example: string): Field[] => [
+  { type: "text", name: "title", label: "Heading", required: true, hint: `Example: ${example}` },
+  { type: "textarea", name: "text", label: "Text", hint: `A sentence or two about this ${itemLabel.toLowerCase()}.` },
+];
+
+export const statIcons = [
+  { value: "projects", label: "Projects (stack)" },
+  { value: "events", label: "Events (calendar)" },
+  { value: "children", label: "Children (people)" },
+  { value: "homes", label: "Orphanages and churches (house)" },
+  { value: "towns", label: "Towns (map pin)" },
+  { value: "heart", label: "Other (heart)" },
+];
 
 export const docs: DocDef[] = [
   {
@@ -37,7 +56,7 @@ export const docs: DocDef[] = [
     label: "Contact details and social links",
     description: "Your email, phone, location and social media links.",
     fields: [
-      { type: "email", name: "email", label: "Email address", hint: "Shown on the Contact page. Example: hello@whiteheartinitiative.org" },
+      { type: "email", name: "email", label: "Email address", hint: "Shown in the Contact section of the About page. Example: hello@whiteheartinitiative.org" },
       { type: "tel", name: "phone", label: "Phone or WhatsApp number", hint: "Include the country code. Example: +231 77 000 0000" },
       { type: "text", name: "location", label: "Location", hint: "Town and county, or a street address. Example: Monrovia, Montserrado County" },
       { type: "text", name: "handle", label: "Social media handle", required: true, hint: "The name people search for on social media, starting with @." },
@@ -60,27 +79,39 @@ export const docs: DocDef[] = [
   {
     key: "home",
     label: "Home page",
-    description: "The heading, intro and the closing section that asks people to help.",
+    description: "The heading, the numbers band, the intro and the closing section that asks people to help.",
     fields: [
       { type: "text", name: "headline", label: "Main heading", required: true, hint: "The big heading at the top of the home page." },
       { type: "text", name: "tagline", label: "Tagline", hint: "Short line under the heading, shown in italics." },
       { type: "textarea", name: "intro", label: "Intro line", hint: "One or two sentences that say what White Heart Initiative does." },
-      { type: "image", name: "heroImage", label: "Top photo", hint: "Large photo behind the heading. Pick a wide (landscape) photo.." },
+      { type: "image", name: "heroImage", label: "Top photo", hint: "Large photo behind the heading. Pick a wide (landscape) photo." },
       photoAlt("heroImageAlt", "Children in school uniform sitting on benches outdoors."),
-      { type: "text", name: "primaryButton", label: "First button text", hint: "Takes people to the 'How you can help' section." },
+      { type: "text", name: "primaryButton", label: "First button text", hint: "Takes people to the Support Us page." },
       { type: "text", name: "secondaryButton", label: "Second button text", hint: "Takes people to the About page." },
+      {
+        type: "groupList",
+        name: "stats",
+        label: "Numbers band",
+        itemLabel: "Number",
+        hint: "The numbers under the top photo. They count up when someone scrolls to them. Four works best.",
+        fields: [
+          { type: "text", name: "value", label: "Number", required: true, hint: "Digits, with + at the end if it is 'more than'. Example: 1,700+" },
+          { type: "text", name: "label", label: "What it counts", required: true, hint: "Example: Children reached" },
+          { type: "select", name: "icon", label: "Icon", options: statIcons },
+        ],
+      },
       { type: "text", name: "ctaTitle", label: "Closing section heading", hint: "Heading near the bottom that asks people to volunteer or donate. Keep it lowercase to match the style." },
       { type: "textarea", name: "ctaText", label: "Closing section text", hint: "One or two sentences asking people to help." },
       { type: "image", name: "ctaImage", label: "Closing section photo", hint: "Photo behind the closing section. Pick a wide photo." },
       photoAlt("ctaImageAlt", "Children standing with a mentor beside a creek."),
-      { type: "text", name: "ctaVolunteerButton", label: "Volunteer button text", hint: "Opens the contact form with this text already filled in." },
-      { type: "text", name: "ctaDonateButton", label: "Donate button text", hint: "Opens the contact form with this text already filled in." },
+      { type: "text", name: "ctaVolunteerButton", label: "Volunteer button text", hint: "Opens your volunteer form (the link set on the Support Us page)." },
+      { type: "text", name: "ctaSupportButton", label: "Second button text", hint: "Opens the Support Us page." },
     ],
   },
   {
     key: "about",
     label: "About page",
-    description: "About text, founder quote, vision, mission and goal. Team members are under Team.",
+    description: "About text, founder quote, vision, mission, goal and the Contact section. Team members are under Team.",
     fields: [
       { type: "image", name: "heroImage", label: "Top photo", hint: "Photo behind the 'about us.' heading. Pick a wide photo." },
       photoAlt("heroImageAlt", "A mentor sitting with a group of children under trees."),
@@ -91,20 +122,34 @@ export const docs: DocDef[] = [
       { type: "textarea", name: "vision", label: "Vision", hint: "One sentence. Also shown on the home page." },
       { type: "list", name: "mission", label: "Mission points", itemLabel: "Point", hint: "Each point shows as its own item. Use the arrows to change the order." },
       { type: "textarea", name: "goal", label: "Goal", hint: "The full goal statement." },
+      { type: "text", name: "contactHeading", label: "Contact section heading", hint: "Shown in lowercase. Example: let's connect" },
+      { type: "textarea", name: "contactIntro", label: "Contact section intro", hint: "Your social media handle is added at the end for you. Email, phone and location are under 'Contact details and social links'." },
     ],
   },
   {
-    key: "contact",
-    label: "Contact page",
-    description: "Heading, intro and the 'How you can help' list.",
+    key: "projectsPage",
+    label: "Projects page",
+    description: "The intro and focus areas text on the Projects page. The projects and focus areas themselves are under Lists.",
     fields: [
-      { type: "text", name: "heading", label: "Heading", required: true, hint: "Big heading at the top of the page. It is shown in lowercase." },
-      { type: "textarea", name: "intro", label: "Intro text", hint: "Shown under the heading. Your social media handle is added at the end for you." },
-      { type: "textarea", name: "helpIntro", label: "'How you can help' intro", hint: "One or two sentences above the list of things you need." },
+      { type: "textarea", name: "intro", label: "Intro text", hint: "Shown at the top of the Projects page and on the home page." },
+      { type: "textarea", name: "focusIntro", label: "Focus areas intro", hint: "Shown above the three focus area cards." },
+      { type: "textarea", name: "projectsIntro", label: "Projects intro", hint: "Shown above Jumpstart, Freedom's Future and any other projects." },
+    ],
+  },
+  {
+    key: "support",
+    label: "Support Us page",
+    description: "Volunteer link, what you need and partnership options.",
+    fields: [
+      { type: "textarea", name: "intro", label: "Intro text", hint: "Shown at the top of the page." },
+      { type: "textarea", name: "volunteerIntro", label: "Volunteer section text", hint: "One or two sentences inviting people to volunteer." },
+      { type: "url", name: "volunteerUrl", label: "Volunteer form link", hint: "The web address of your sign-up form, for example a Google Form. Until this is filled in, the button opens the contact form on the About page." },
+      { type: "text", name: "volunteerButton", label: "Volunteer button text", hint: "Example: Sign up to volunteer" },
+      { type: "textarea", name: "needsIntro", label: "'What we need' intro", hint: "One or two sentences above the list of things you need." },
       {
         type: "groupList",
-        name: "helpGroups",
-        label: "'How you can help' list",
+        name: "needs",
+        label: "'What we need' list",
         itemLabel: "Group",
         hint: "Each group is a heading with a list of items or a short sentence.",
         fields: [
@@ -113,43 +158,70 @@ export const docs: DocDef[] = [
           { type: "textarea", name: "text", label: "Short sentence", hint: "Optional. Use this for needs that are not a list of items." },
         ],
       },
-      { type: "list", name: "helpButtons", label: "Buttons under the list", itemLabel: "Button text", hint: "Each button opens the contact form with its text already filled in." },
+      { type: "textarea", name: "partnerIntro", label: "Partnership intro", hint: "Shown above the partnership options." },
+      { type: "groupList", name: "partnerOptions", label: "Partnership options", itemLabel: "Option", fields: titleText("Option", "Venue") },
     ],
   },
   {
-    key: "programsPage",
-    label: "Programs page intro",
-    description: "The text at the top of the Programs page. The programs themselves are under Programs.",
-    fields: [{ type: "textarea", name: "intro", label: "Intro text", hint: "Also shown on the home page above the programs." }],
-  },
-  {
-    key: "galleryPage",
-    label: "Gallery page intro",
-    description: "The text at the top of the Gallery page. Photos are under Gallery.",
+    key: "mediaPage",
+    label: "Media page",
+    description: "The intro on the Media page. News links and social posts are under Media links, photos under Gallery.",
     fields: [{ type: "textarea", name: "intro", label: "Intro text" }],
   },
 ];
 
 export const collections: CollectionDef[] = [
   {
-    name: "programs",
-    label: "Programs",
-    singular: "program",
-    description: "Shown as cards on the Programs page and the home page.",
+    name: "projects",
+    label: "Projects",
+    singular: "project",
+    plural: "projects",
+    description: "Your named projects, like Jumpstart and Freedom's Future. Shown on the Projects page and the home page.",
+    titleField: "name",
+    imageField: "image",
+    sort: "manual",
+    fields: [
+      { type: "text", name: "name", label: "Project name", required: true, hint: "Use the same name everywhere so people remember it. Example: Freedom's Future" },
+      { type: "text", name: "tagline", label: "One-line description", required: true, hint: "Example: Our annual Independence Day celebration for children" },
+      { type: "text", name: "schedule", label: "When it runs", hint: "Example: Every year on July 26" },
+      { type: "text", name: "next", label: "Next date", hint: "Optional. Example: July 26, 2027" },
+      { type: "image", name: "image", label: "Photo", required: true, hint: "A photo from this project. Pick a wide photo." },
+      photoAlt("imageAlt", "Children at a Freedom's Future celebration."),
+      { type: "textarea", name: "description", label: "Write-up", required: true, hint: "What the project is and what happens. Leave an empty line between paragraphs." },
+      {
+        type: "groupList",
+        name: "highlights",
+        label: "Numbers",
+        itemLabel: "Number",
+        hint: "Real numbers from this project, for example children per year. Example: Number '600+', Label '2025'.",
+        fields: [
+          { type: "text", name: "value", label: "Number", required: true, hint: "Example: 600+" },
+          { type: "text", name: "label", label: "Label", required: true, hint: "Example: children in 2025" },
+        ],
+      },
+    ],
+  },
+  {
+    name: "focus",
+    label: "Focus areas",
+    singular: "focus area",
+    plural: "focus areas",
+    description: "Education, Empowerment and Health. Shown as cards on the Projects page and the home page.",
     titleField: "title",
     imageField: "image",
     sort: "manual",
     fields: [
-      { type: "text", name: "title", label: "Program name", required: true, hint: "Short name, for example Education." },
-      { type: "image", name: "image", label: "Photo", required: true, hint: "A photo from this program. Pick a wide photo." },
+      { type: "text", name: "title", label: "Name", required: true, hint: "Short name, for example Education." },
+      { type: "image", name: "image", label: "Photo", required: true, hint: "Pick a wide photo." },
       photoAlt("imageAlt", "A mentor helping two girls with a reading exercise."),
-      { type: "textarea", name: "description", label: "Write-up", required: true, hint: "A few sentences about what this program does. Leave an empty line between paragraphs. The first paragraph is also shown on the home page." },
+      { type: "textarea", name: "description", label: "Write-up", required: true, hint: "What you do in this area, and which projects do it. Leave an empty line between paragraphs. The first paragraph is also shown on the home page." },
     ],
   },
   {
     name: "team",
     label: "Team",
     singular: "team member",
+    plural: "people",
     description: "People shown in the Team section of the About page.",
     titleField: "name",
     imageField: "photo",
@@ -163,17 +235,47 @@ export const collections: CollectionDef[] = [
   },
   {
     name: "gallery",
-    label: "Gallery",
+    label: "Gallery photos",
     singular: "photo",
-    description: "Photos from programme activities. The newest date shows first. The six newest also appear on the home page.",
+    plural: "photos",
+    description: "Photos from your activities, shown on the Media page. The newest date shows first. The six newest also appear on the home page.",
     titleField: "alt",
     imageField: "image",
     sort: "date",
     fields: [
       { type: "image", name: "image", label: "Photo", required: true, hint: "Upload the photo." },
       photoAlt("alt", "Children lining up for a health check outside a school."),
-      { type: "program", name: "program", label: "Program", hint: "Optional. Pick the program this photo belongs to so visitors can filter by it." },
+      { type: "ref", name: "project", label: "Project", collection: "projects", emptyLabel: "No project", hint: "Optional. Pick the project this photo is from so visitors can filter by it." },
       { type: "date", name: "date", label: "Date taken", required: true, hint: "Roughly when the photo was taken. Used to sort the gallery." },
+    ],
+  },
+  {
+    name: "media",
+    label: "Media links",
+    singular: "link",
+    plural: "links",
+    description: "News articles and social media posts about your work, shown on the Media page. The newest date shows first.",
+    titleField: "title",
+    imageField: "image",
+    sort: "date",
+    fields: [
+      { type: "text", name: "title", label: "Headline or title", required: true, hint: "Copy the article headline or describe the post. Example: Children celebrate Independence Day at Freedom's Future" },
+      { type: "url", name: "url", label: "Link", required: true, hint: "Paste the full web address, starting with https://" },
+      {
+        type: "select",
+        name: "kind",
+        label: "Type",
+        required: true,
+        options: [
+          { value: "news", label: "News article" },
+          { value: "social", label: "Social media post" },
+          { value: "video", label: "Video" },
+        ],
+      },
+      { type: "text", name: "source", label: "Where it was published", required: true, hint: "Example: FrontPage Africa, Facebook, YouTube" },
+      { type: "date", name: "date", label: "Date published", required: true },
+      { type: "image", name: "image", label: "Picture", hint: "Optional. A photo or screenshot to show with the link." },
+      photoAlt("imageAlt", "Children holding Liberian flags at an Independence Day event.", false),
     ],
   },
 ];
@@ -202,6 +304,7 @@ export function clean(fields: Field[], input: unknown): { data: Record<string, u
         if (f.type === "url" && s && !/^https?:\/\//i.test(s)) return { data, error: `${f.label}: the link must start with https://` };
         if (f.type === "date" && s && !/^\d{4}-\d{2}-\d{2}$/.test(s)) return { data, error: `${f.label}: use the date picker.` };
         if (f.type === "image" && s && !/^(https:\/\/|\/uploads\/)/.test(s)) return { data, error: `${f.label}: please upload the photo again.` };
+        if (f.type === "select" && s && !f.options.some((o) => o.value === s)) return { data, error: `${f.label}: pick one of the options.` };
         data[f.name] = s;
       }
     }

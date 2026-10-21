@@ -18,13 +18,16 @@ export type Home = {
   heroImageAlt: string;
   primaryButton: string;
   secondaryButton: string;
+  stats: Stat[];
   ctaTitle: string;
   ctaText: string;
   ctaImage: string;
   ctaImageAlt: string;
   ctaVolunteerButton: string;
-  ctaDonateButton: string;
+  ctaSupportButton: string;
 };
+
+export type Stat = { value: string; label: string; icon?: string };
 
 export type About = {
   heroImage: string;
@@ -36,38 +39,80 @@ export type About = {
   vision: string;
   mission: string[];
   goal: string;
+  contactHeading: string;
+  contactIntro: string;
 };
 
 export type HelpGroup = { title: string; items?: string[]; text?: string };
+export type TitleText = { title: string; text?: string };
 
-export type Contact = {
-  heading: string;
+export type Support = {
   intro: string;
-  helpIntro: string;
-  helpGroups: HelpGroup[];
-  helpButtons: string[];
+  volunteerIntro: string;
+  volunteerUrl: string;
+  volunteerButton: string;
+  needsIntro: string;
+  needs: HelpGroup[];
+  partnerIntro: string;
+  partnerOptions: TitleText[];
 };
 
-export type Program = { id: string; slug: string; title: string; image: string; imageAlt: string; description: string };
+export type Project = {
+  id: string;
+  slug: string;
+  name: string;
+  tagline: string;
+  schedule: string;
+  next: string;
+  image: string;
+  imageAlt: string;
+  description: string;
+  highlights: { value: string; label: string }[];
+};
+export type FocusArea = { id: string; slug: string; title: string; image: string; imageAlt: string; description: string };
 export type TeamMember = { id: string; name: string; position: string; photo?: string; photoAlt?: string };
-export type Photo = { id: string; image: string; alt: string; program?: string; date: string };
+export type Photo = { id: string; image: string; alt: string; project?: string; date: string };
+export type MediaLink = { id: string; title: string; url: string; kind: "news" | "social" | "video"; source: string; date: string; image: string; imageAlt: string };
 
 const doc = async <T,>(key: string) => ((await store.getDoc(key)) ?? {}) as T;
 
 export const getSettings = () => doc<Settings>("settings").then((s) => ({ ...s, social: s.social ?? ({} as Settings["social"]) }));
-export const getHome = () => doc<Home>("home");
+export const getHome = () => doc<Home>("home").then((h) => ({ ...h, stats: h.stats ?? [] }));
 export const getAbout = () => doc<About>("about").then((a) => ({ ...a, mission: a.mission ?? [] }));
-export const getContact = () =>
-  doc<Contact>("contact").then((c) => ({ ...c, helpGroups: c.helpGroups ?? [], helpButtons: c.helpButtons ?? [] }));
-export const getProgramsPage = () => doc<{ intro: string }>("programsPage");
-export const getGalleryPage = () => doc<{ intro: string }>("galleryPage");
+export const getSupport = () =>
+  doc<Support>("support").then((s) => ({
+    ...s,
+    needs: s.needs ?? [],
+    partnerOptions: s.partnerOptions ?? [],
+  }));
+export const getProjectsPage = () => doc<{ intro: string; focusIntro: string; projectsIntro: string }>("projectsPage");
+export const getMediaPage = () => doc<{ intro: string }>("mediaPage");
 
 const str = (d: Data, k: string) => (typeof d[k] === "string" ? (d[k] as string) : "");
 
-export const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+export const slugify = (s: string) =>
+  s.toLowerCase().replace(/['’]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
-export async function getPrograms(): Promise<Program[]> {
-  return (await store.listItems("programs")).map(({ id, data }) => ({
+const pairs = (v: unknown) =>
+  Array.isArray(v) ? (v as Data[]).map((x) => ({ value: str(x, "value"), label: str(x, "label") })).filter((x) => x.value) : [];
+
+export async function getProjects(): Promise<Project[]> {
+  return (await store.listItems("projects")).map(({ id, data }) => ({
+    id,
+    slug: slugify(str(data, "name")) || id,
+    name: str(data, "name"),
+    tagline: str(data, "tagline"),
+    schedule: str(data, "schedule"),
+    next: str(data, "next"),
+    image: str(data, "image"),
+    imageAlt: str(data, "imageAlt"),
+    description: str(data, "description"),
+    highlights: pairs(data.highlights),
+  }));
+}
+
+export async function getFocusAreas(): Promise<FocusArea[]> {
+  return (await store.listItems("focus")).map(({ id, data }) => ({
     id,
     slug: slugify(str(data, "title")) || id,
     title: str(data, "title"),
@@ -89,10 +134,31 @@ export async function getTeam(): Promise<TeamMember[]> {
 
 export async function getPhotos(): Promise<Photo[]> {
   return (await store.listItems("gallery"))
-    .map(({ id, data }) => ({ id, image: str(data, "image"), alt: str(data, "alt"), program: str(data, "program"), date: str(data, "date") }))
+    .map(({ id, data }) => ({ id, image: str(data, "image"), alt: str(data, "alt"), project: str(data, "project"), date: str(data, "date") }))
     .filter((p) => p.image)
     .sort((a, b) => b.date.localeCompare(a.date));
 }
+
+export async function getMediaLinks(): Promise<MediaLink[]> {
+  return (await store.listItems("media"))
+    .map(({ id, data }) => ({
+      id,
+      title: str(data, "title"),
+      url: str(data, "url"),
+      kind: (["news", "social", "video"].includes(str(data, "kind")) ? str(data, "kind") : "news") as MediaLink["kind"],
+      source: str(data, "source"),
+      date: str(data, "date"),
+      image: str(data, "image"),
+      imageAlt: str(data, "imageAlt"),
+    }))
+    .filter((m) => m.url && m.title)
+    .sort((a, b) => b.date.localeCompare(a.date));
+}
+
+export const formatDate = (iso: string) =>
+  /^\d{4}-\d{2}-\d{2}$/.test(iso)
+    ? new Date(iso + "T12:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" })
+    : iso;
 
 // Splits text from a multi-line field into paragraphs.
 export const paragraphs = (text = "") => text.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
