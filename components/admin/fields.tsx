@@ -1,11 +1,18 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useId, useRef, useState } from "react";
 import type { RefOption, Refs } from "@/lib/admin/refs";
 import type { Field } from "@/lib/admin/schema";
 import { moveItem, useSortable } from "./sortable";
 
 export type Values = Record<string, unknown>;
+
+// The rich text editor is only downloaded on pages that have one (news posts).
+const RichTextEditor = dynamic(() => import("./RichTextEditor").then((m) => m.RichTextEditor), {
+  ssr: false,
+  loading: () => <div className="mt-1 min-h-[20rem] border-2 border-stone-300 bg-white p-4 text-stone-500">Loading editor...</div>,
+});
 
 const input =
   "mt-1 block w-full border-2 border-stone-300 bg-white px-3 py-2.5 text-base text-ink focus:border-forest focus:outline-none aria-invalid:border-red-700";
@@ -88,6 +95,26 @@ export function FieldInput({
           value={String(value ?? "")}
           onChange={(e) => onChange(e.target.value)}
         />,
+      );
+    case "richtext":
+      return (
+        <div>
+          <p id={`${id}-label`} className="block text-base font-bold text-ink">
+            {field.label}
+            {isRequired(field) && <span className="font-normal text-stone-500"> (required)</span>}
+          </p>
+          <Hint id={hintId} text={field.hint} />
+          <RichTextEditor
+            id={id}
+            labelId={`${id}-label`}
+            path={path}
+            value={String(value ?? "")}
+            onChange={onChange}
+            describedBy={describedBy}
+            invalid={invalid}
+          />
+          <Missing id={errorId} show={invalid} />
+        </div>
       );
     case "image":
       return <ImageInput id={id} field={field} path={path} invalid={invalid} value={String(value ?? "")} onChange={onChange} />;

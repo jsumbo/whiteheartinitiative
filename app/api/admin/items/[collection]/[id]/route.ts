@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { fail, refreshSite, requireAdmin } from "@/lib/admin/api";
-import { clean, getCollectionDef } from "@/lib/admin/schema";
+import { clean } from "@/lib/admin/clean";
+import { getCollectionDef } from "@/lib/admin/schema";
 import { store } from "@/lib/store";
 
 type Ctx = RouteContext<"/api/admin/items/[collection]/[id]">;

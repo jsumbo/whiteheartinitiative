@@ -176,3 +176,50 @@ export const socialLabels = {
 
 // Maps a help button label to the anchor used to prefill the contact form.
 export const topicId = (label: string) => "form-" + slugify(label);
+
+export type Post = {
+  id: string;
+  slug: string;
+  title: string;
+  date: string;
+  cover: string;
+  coverAlt: string;
+  summary: string;
+  body: string;
+  project: string;
+};
+
+// Published news posts, newest first. Each gets a unique web address made from its title (or the slug field).
+export async function getPosts(): Promise<Post[]> {
+  const { sanitizeRichText, richTextToPlain, responsiveImages } = await import("@/lib/sanitize");
+  const posts = (await store.listItems("posts"))
+    .filter(({ data }) => str(data, "status") === "published" && str(data, "title"))
+    .map(({ id, data }) => {
+      const body = sanitizeRichText(str(data, "body"));
+      const plain = richTextToPlain(body);
+      const summary = str(data, "summary") || (plain.length > 180 ? plain.slice(0, plain.lastIndexOf(" ", 177)) + "…" : plain);
+      return {
+        id,
+        slug: slugify(str(data, "slug") || str(data, "title")) || id,
+        title: str(data, "title"),
+        date: str(data, "date"),
+        cover: str(data, "cover"),
+        coverAlt: str(data, "coverAlt"),
+        summary,
+        body: responsiveImages(body),
+        project: str(data, "project"),
+      };
+    })
+    .sort((a, b) => b.date.localeCompare(a.date));
+
+  // Two posts with the same title get -2, -3... so their addresses never clash.
+  const seen = new Map<string, number>();
+  for (const p of [...posts].reverse()) {
+    const n = (seen.get(p.slug) ?? 0) + 1;
+    seen.set(p.slug, n);
+    if (n > 1) p.slug = `${p.slug}-${n}`;
+  }
+  return posts;
+}
+
+export const getPost = async (slug: string) => (await getPosts()).find((p) => p.slug === slug) ?? null;

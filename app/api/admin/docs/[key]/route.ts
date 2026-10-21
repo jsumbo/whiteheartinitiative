@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { fail, refreshSite, requireAdmin } from "@/lib/admin/api";
-import { clean, getDocDef } from "@/lib/admin/schema";
+import { clean } from "@/lib/admin/clean";
+import { getDocDef } from "@/lib/admin/schema";
 import { store } from "@/lib/store";
 
 export async function PUT(request: Request, ctx: RouteContext<"/api/admin/docs/[key]">) {

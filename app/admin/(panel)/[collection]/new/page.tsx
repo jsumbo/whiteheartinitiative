@@ -14,7 +14,11 @@ export default async function NewItem(props: PageProps<"/admin/[collection]/new"
   if (!def) notFound();
   const refs = await loadRefs(def.fields);
   // Lists sorted by date start with today's date.
-  const initial = def.sort === "date" ? { date: new Date().toISOString().slice(0, 10) } : {};
+  const initial = {
+    ...(def.sort === "date" ? { date: new Date().toISOString().slice(0, 10) } : {}),
+    // New news posts start as drafts so nothing goes live by accident.
+    ...(def.name === "posts" ? { status: "draft" } : {}),
+  };
 
   return (
     <>

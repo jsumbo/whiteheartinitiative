@@ -21,6 +21,7 @@ const subtitles: Record<CollectionName, (d: Data, refTitle: string) => string> =
   team: (d) => s(d, "position"),
   gallery: (d, project) => [d.date ? formatDate(s(d, "date")) : "", project].filter(Boolean).join(" · "),
   media: (d) => [s(d, "source"), d.date ? formatDate(s(d, "date")) : ""].filter(Boolean).join(" · "),
+  posts: (d) => [s(d, "status") === "published" ? "Published" : "Draft", d.date ? formatDate(s(d, "date")) : ""].filter(Boolean).join(" · "),
 };
 
 export default async function CollectionPage(props: PageProps<"/admin/[collection]">) {

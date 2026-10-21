@@ -4,6 +4,8 @@
 export type Field =
   | { type: "text" | "textarea" | "email" | "url" | "tel" | "date"; name: string; label: string; hint?: string; required?: boolean }
   | { type: "image"; name: string; label: string; hint?: string; required?: boolean }
+  // Formatted text (headings, bold, lists, links, photos) from the rich text editor, stored as cleaned HTML.
+  | { type: "richtext"; name: string; label: string; hint?: string; required?: boolean }
   | { type: "select"; name: string; label: string; hint?: string; required?: boolean; options: { value: string; label: string }[] }
   // Picks an entry from another list, e.g. which project a photo belongs to.
   | { type: "ref"; name: string; label: string; hint?: string; collection: CollectionName; emptyLabel: string }
@@ -11,7 +13,7 @@ export type Field =
   | { type: "group"; name: string; label: string; hint?: string; fields: Field[] }
   | { type: "groupList"; name: string; label: string; hint?: string; itemLabel: string; fields: Field[] };
 
-export type CollectionName = "projects" | "focus" | "team" | "gallery" | "media";
+export type CollectionName = "projects" | "focus" | "team" | "gallery" | "media" | "posts";
 
 export type DocDef = { key: string; label: string; description: string; fields: Field[] };
 
@@ -172,6 +174,37 @@ export const docs: DocDef[] = [
 
 export const collections: CollectionDef[] = [
   {
+    name: "posts",
+    label: "News posts",
+    singular: "post",
+    plural: "posts",
+    description: "Your own news and stories, shown on the News page. The newest date shows first. Drafts are only visible here.",
+    titleField: "title",
+    imageField: "cover",
+    sort: "date",
+    fields: [
+      { type: "text", name: "title", label: "Title", required: true, hint: "Example: 600 children celebrate Freedom's Future 2025" },
+      {
+        type: "select",
+        name: "status",
+        label: "Status",
+        required: true,
+        options: [
+          { value: "draft", label: "Draft (not on the website)" },
+          { value: "published", label: "Published (on the website)" },
+        ],
+        hint: "Keep it as a draft until it is ready. Published posts show on the News page straight away.",
+      },
+      { type: "date", name: "date", label: "Date", required: true, hint: "Shown on the post. Used to sort the News page." },
+      { type: "image", name: "cover", label: "Cover photo", hint: "Shown at the top of the post and on the News page. Pick a wide photo." },
+      photoAlt("coverAlt", "Children holding Liberian flags at Freedom's Future.", false),
+      { type: "textarea", name: "summary", label: "Short summary", hint: "One or two sentences for the News page and for link previews on social media. If empty, the start of the post is used." },
+      { type: "richtext", name: "body", label: "Post", required: true, hint: "Write the post. Use the toolbar for headings, bold, lists, links and photos." },
+      { type: "ref", name: "project", label: "Project", collection: "projects", emptyLabel: "No project", hint: "Optional. Link the post to Jumpstart or Freedom's Future." },
+      { type: "text", name: "slug", label: "Web address", hint: "Optional. The end of the post's address, e.g. freedoms-future-2025. Made from the title if empty. Changing it breaks old links." },
+    ],
+  },
+  {
     name: "projects",
     label: "Projects",
     singular: "project",
@@ -282,33 +315,3 @@ export const collections: CollectionDef[] = [
 
 export const getDocDef = (key: string) => docs.find((d) => d.key === key);
 export const getCollectionDef = (name: string) => collections.find((c) => c.name === name);
-
-// Keeps only known fields, trims text and checks required ones. Returns an error message if something is missing.
-export function clean(fields: Field[], input: unknown): { data: Record<string, unknown>; error?: string } {
-  const src = (input && typeof input === "object" ? input : {}) as Record<string, unknown>;
-  const data: Record<string, unknown> = {};
-  for (const f of fields) {
-    const v = src[f.name];
-    switch (f.type) {
-      case "list":
-        data[f.name] = Array.isArray(v) ? v.map((x) => String(x ?? "").trim().slice(0, 1000)).filter(Boolean) : [];
-        break;
-      case "group":
-        data[f.name] = clean(f.fields, v).data;
-        break;
-      case "groupList":
-        data[f.name] = Array.isArray(v) ? v.map((x) => clean(f.fields, x).data) : [];
-        break;
-      default: {
-        const s = typeof v === "string" ? v.trim().slice(0, 10000) : "";
-        if (f.type === "url" && s && !/^https?:\/\//i.test(s)) return { data, error: `${f.label}: the link must start with https://` };
-        if (f.type === "date" && s && !/^\d{4}-\d{2}-\d{2}$/.test(s)) return { data, error: `${f.label}: use the date picker.` };
-        if (f.type === "image" && s && !/^(https:\/\/|\/uploads\/)/.test(s)) return { data, error: `${f.label}: please upload the photo again.` };
-        if (f.type === "select" && s && !f.options.some((o) => o.value === s)) return { data, error: `${f.label}: pick one of the options.` };
-        data[f.name] = s;
-      }
-    }
-    if ("required" in f && f.required && !data[f.name]) return { data, error: `Please fill in "${f.label}".` };
-  }
-  return { data };
-}

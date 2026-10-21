@@ -17,4 +17,5 @@ export const collectionPaths: Record<CollectionName, string> = {
   team: "/about#team-title",
   gallery: "/media",
   media: "/media",
+  posts: "/news",
 };
