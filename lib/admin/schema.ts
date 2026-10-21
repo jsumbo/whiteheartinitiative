@@ -131,7 +131,7 @@ export const docs: DocDef[] = [
   {
     key: "projectsPage",
     label: "Projects page",
-    description: "The intro and focus areas text on the Projects page. The projects and focus areas themselves are under Lists.",
+    description: "The intro and focus areas text on the Projects page. The projects and programs themselves are under Lists.",
     fields: [
       { type: "textarea", name: "intro", label: "Intro text", hint: "Shown at the top of the Projects page and on the home page." },
       { type: "textarea", name: "focusIntro", label: "Focus areas intro", hint: "Shown above the three focus area cards." },
@@ -236,10 +236,10 @@ export const collections: CollectionDef[] = [
   },
   {
     name: "focus",
-    label: "Focus areas",
-    singular: "focus area",
-    plural: "focus areas",
-    description: "Education, Empowerment and Health. Shown as cards on the Projects page and the home page.",
+    label: "Programs",
+    singular: "program",
+    plural: "programs",
+    description: "Education, Empowerment and Health: the cards with a photo, title and description on the home page and the Projects page.",
     titleField: "title",
     imageField: "image",
     sort: "manual",

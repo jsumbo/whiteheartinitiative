@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image, { getImageProps } from "next/image";
+import Link from "next/link";
 import Script from "next/script";
 import { SocialLinks } from "@/components/SocialLinks";
 import { formatDate, getMediaLinks, getMediaPage, getPhotos, getProjects, getSettings, type MediaLink } from "@/lib/content";
@@ -48,6 +49,10 @@ export default async function MediaPage() {
         <div className="wrap py-14 md:py-20">
           <h1 className="display">media.</h1>
           <p className="prose-lg mt-6">{intro}</p>
+          <p className="mt-4 text-lg">
+            For our own stories and updates, see{" "}
+            <Link href="/news" className="font-bold text-gold-light underline underline-offset-4">News</Link>.
+          </p>
         </div>
       </div>
 

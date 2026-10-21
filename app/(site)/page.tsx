@@ -5,13 +5,13 @@ import { ButtonLink } from "@/components/ButtonLink";
 import { PhotoBanner } from "@/components/PhotoBanner";
 import { projectTheme } from "@/components/ProjectFeature";
 import { Stats } from "@/components/Stats";
-import { getAbout, getFocusAreas, getHome, getPhotos, getProjects, getProjectsPage, getSupport, paragraphs } from "@/lib/content";
+import { formatDate, getAbout, getFocusAreas, getHome, getPhotos, getPosts, getProjects, getProjectsPage, getSupport, paragraphs } from "@/lib/content";
 import { openGraph } from "@/lib/site";
 
 export const metadata: Metadata = { alternates: { canonical: "/" }, openGraph: { ...openGraph, url: "/" } };
 
 export default async function HomePage() {
-  const [home, about, projects, focusAreas, projectsPage, allPhotos, support] = await Promise.all([
+  const [home, about, projects, focusAreas, projectsPage, allPhotos, support, allPosts] = await Promise.all([
     getHome(),
     getAbout(),
     getProjects(),
@@ -19,7 +19,9 @@ export default async function HomePage() {
     getProjectsPage(),
     getPhotos(),
     getSupport(),
+    getPosts(),
   ]);
+  const posts = allPosts.slice(0, 3);
   const photos = allPhotos.slice(0, 6);
 
   return (
@@ -108,6 +110,36 @@ export default async function HomePage() {
           </ul>
         </div>
       </section>
+
+      {posts.length > 0 && (
+        <section aria-labelledby="news-title" className="wrap py-14 md:py-20">
+          <h2 id="news-title" className="display text-forest">latest news.</h2>
+          <ul className="mt-10 grid gap-8 md:grid-cols-3">
+            {posts.map((p) => (
+              <li key={p.id} className="flex min-w-0 flex-col">
+                {p.cover && (
+                  <div className="relative mb-4 aspect-[16/10] w-full bg-olive">
+                    <Image src={p.cover} alt={p.coverAlt} fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover" />
+                  </div>
+                )}
+                <p className="text-sm font-bold tracking-[0.12em] text-olive uppercase">
+                  <time dateTime={p.date}>{formatDate(p.date)}</time>
+                </p>
+                <h3 className="mt-1 text-xl leading-snug font-black text-forest">
+                  <Link href={`/news/${p.slug}`} className="hover:underline">{p.title}</Link>
+                </h3>
+                <p className="mt-2 flex-1">{p.summary}</p>
+                <Link href={`/news/${p.slug}`} className="mt-3 self-start font-bold text-forest underline decoration-gold decoration-2 underline-offset-4">
+                  Read the full story<span className="sr-only">: {p.title}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <Link href="/news" className="mt-10 inline-block font-bold text-forest underline decoration-gold decoration-2 underline-offset-4">
+            See all news
+          </Link>
+        </section>
+      )}
 
       {photos.length > 0 && (
         <section aria-labelledby="gallery-title" className="wrap py-14 md:py-20">

@@ -4,7 +4,8 @@ import Link from "next/link";
 import { formatDate, getPosts, getProjects } from "@/lib/content";
 import { pageMetadata } from "@/lib/site";
 
-export const metadata: Metadata = pageMetadata("/news", "News", "News and stories from White Heart Initiative's projects in Liberia.");
+const meta = pageMetadata("/news", "News", "News and stories from White Heart Initiative's projects in Liberia.");
+export const metadata: Metadata = { ...meta, alternates: { ...meta.alternates, types: { "application/rss+xml": "/news/feed.xml" } } };
 
 export default async function NewsPage() {
   const [posts, projects] = await Promise.all([getPosts(), getProjects()]);

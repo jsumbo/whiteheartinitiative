@@ -189,11 +189,12 @@ export type Post = {
   project: string;
 };
 
-// Published news posts, newest first. Each gets a unique web address made from its title (or the slug field).
-export async function getPosts(): Promise<Post[]> {
+// News posts, newest first. Each gets a unique web address made from its title (or the slug field).
+// Only published posts are public; drafts are included only for the signed-in preview.
+async function readPosts(includeDrafts: boolean): Promise<(Post & { status: string })[]> {
   const { sanitizeRichText, richTextToPlain, responsiveImages } = await import("@/lib/sanitize");
   const posts = (await store.listItems("posts"))
-    .filter(({ data }) => str(data, "status") === "published" && str(data, "title"))
+    .filter(({ data }) => (includeDrafts || str(data, "status") === "published") && str(data, "title"))
     .map(({ id, data }) => {
       const body = sanitizeRichText(str(data, "body"));
       const plain = richTextToPlain(body);
@@ -208,6 +209,7 @@ export async function getPosts(): Promise<Post[]> {
         summary,
         body: responsiveImages(body),
         project: str(data, "project"),
+        status: str(data, "status") || "draft",
       };
     })
     .sort((a, b) => b.date.localeCompare(a.date));
@@ -222,4 +224,7 @@ export async function getPosts(): Promise<Post[]> {
   return posts;
 }
 
+export const getPosts = (): Promise<Post[]> => readPosts(false);
 export const getPost = async (slug: string) => (await getPosts()).find((p) => p.slug === slug) ?? null;
+// Any post, draft or published, for the admin preview.
+export const getPostForPreview = async (id: string) => (await readPosts(true)).find((p) => p.id === id) ?? null;

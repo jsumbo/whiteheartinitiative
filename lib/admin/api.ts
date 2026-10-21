@@ -12,4 +12,6 @@ export async function requireAdmin() {
 // Rebuilds the public pages so changes show straight away.
 export function refreshSite() {
   revalidatePath("/", "layout");
+  // Route handlers are not pages, so the news feed is refreshed on its own.
+  revalidatePath("/news/feed.xml");
 }
