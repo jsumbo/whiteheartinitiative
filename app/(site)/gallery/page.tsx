@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import Image, { getImageProps } from "next/image";
 import Script from "next/script";
 import { getGalleryPage, getPhotos, getPrograms } from "@/lib/content";
+import { pageMetadata } from "@/lib/site";
 
 export async function generateMetadata(): Promise<Metadata> {
-  return { title: "Gallery", description: (await getGalleryPage()).intro };
+  return pageMetadata("/gallery", "Gallery", (await getGalleryPage()).intro);
 }
 
 export default async function GalleryPage() {

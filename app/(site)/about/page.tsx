@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { PhotoBanner } from "@/components/PhotoBanner";
 import { getAbout, getTeam } from "@/lib/content";
+import { pageMetadata } from "@/lib/site";
 
 export async function generateMetadata(): Promise<Metadata> {
-  return { title: "About us", description: (await getAbout()).body };
+  return pageMetadata("/about", "About us", (await getAbout()).body);
 }
 
 export default async function AboutPage() {

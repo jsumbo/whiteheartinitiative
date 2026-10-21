@@ -1,8 +1,12 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ButtonLink } from "@/components/ButtonLink";
 import { PhotoBanner } from "@/components/PhotoBanner";
 import { getAbout, getHome, getPhotos, getPrograms, getProgramsPage, paragraphs, topicId } from "@/lib/content";
+import { openGraph } from "@/lib/site";
+
+export const metadata: Metadata = { alternates: { canonical: "/" }, openGraph: { ...openGraph, url: "/" } };
 
 export default async function HomePage() {
   const [home, about, programs, programsPage, allPhotos] = await Promise.all([

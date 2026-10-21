@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Archivo, Lora } from "next/font/google";
+import { ogImage, openGraph, siteName, siteUrl } from "@/lib/site";
 import "./globals.css";
 
 const archivo = Archivo({ variable: "--font-archivo", subsets: ["latin"], display: "swap" });
@@ -12,14 +13,16 @@ const lora = Lora({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://whiteheart.org"),
+  metadataBase: new URL(siteUrl),
+  applicationName: siteName,
   title: {
-    default: "White Heart Initiative | leading the future",
-    template: "%s | White Heart Initiative",
+    default: `${siteName} | leading the future`,
+    template: `%s | ${siteName}`,
   },
   description:
     "A mentorship platform helping children discover, develop and nurture their individual uniqueness and passions.",
-  openGraph: { siteName: "White Heart Initiative", type: "website", locale: "en" },
+  openGraph,
+  twitter: { card: "summary_large_image", images: [ogImage] },
 };
 
 export const viewport: Viewport = { themeColor: "#0b3d0b" };

@@ -37,7 +37,7 @@ export const docs: DocDef[] = [
     label: "Contact details and social links",
     description: "Your email, phone, location and social media links.",
     fields: [
-      { type: "email", name: "email", label: "Email address", hint: "Shown on the Contact page. Example: hello@whiteheart.org" },
+      { type: "email", name: "email", label: "Email address", hint: "Shown on the Contact page. Example: hello@whiteheartinitiative.org" },
       { type: "tel", name: "phone", label: "Phone or WhatsApp number", hint: "Include the country code. Example: +231 77 000 0000" },
       { type: "text", name: "location", label: "Location", hint: "Town and county, or a street address. Example: Monrovia, Montserrado County" },
       { type: "text", name: "handle", label: "Social media handle", required: true, hint: "The name people search for on social media, starting with @." },

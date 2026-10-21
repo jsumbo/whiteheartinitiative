@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { ButtonLink } from "@/components/ButtonLink";
 import { getPrograms, getProgramsPage, paragraphs } from "@/lib/content";
+import { pageMetadata } from "@/lib/site";
 
 export async function generateMetadata(): Promise<Metadata> {
-  return { title: "Programs", description: (await getProgramsPage()).intro };
+  return pageMetadata("/programs", "Programs", (await getProgramsPage()).intro);
 }
 
 export default async function ProgramsPage() {

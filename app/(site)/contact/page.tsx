@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { SocialLinks } from "@/components/SocialLinks";
 import { getContact, getSettings, isPlaceholder, topicId } from "@/lib/content";
+import { pageMetadata } from "@/lib/site";
 import { ContactForm } from "./ContactForm";
 
 export async function generateMetadata(): Promise<Metadata> {
   const [contact, settings] = await Promise.all([getContact(), getSettings()]);
-  return { title: "Contact", description: `${contact.intro} ${settings.handle}` };
+  return pageMetadata("/contact", "Contact", `${contact.intro} ${settings.handle}`);
 }
 
 function Detail({ label, value, href }: { label: string; value: string; href?: string }) {
