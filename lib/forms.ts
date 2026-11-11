@@ -18,7 +18,7 @@ export const field = (v: unknown, max: number) => (typeof v === "string" ? v.tri
 
 export const validEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-// Saves a submission so it shows in the admin inbox. Returns false if the disk is read-only (e.g. on Vercel).
+// Saves a submission so it shows in the admin inbox. Returns false if saving fails (e.g. a read-only disk without Appwrite).
 export async function saveSubmission(collection: "messages", data: Record<string, unknown>) {
   try {
     await store.createItem(collection, { ...data, receivedAt: new Date().toISOString() });

@@ -4,7 +4,7 @@ import { randomUUID } from "node:crypto";
 import type { Data, Item, Store } from "./types";
 
 // Local JSON files in /content and uploaded photos in /content/uploads.
-// Needs a host with a writable disk (a VPS, Docker, Railway or Render with a disk). Vercel and Netlify cannot save files.
+// Used when Appwrite isn't configured. Needs a host with a writable disk (a VPS, Docker, Railway or Render with a disk).
 
 const root = path.join(process.cwd(), "content");
 const uploads = path.join(root, "uploads");
@@ -83,5 +83,13 @@ export const fileStore: Store = {
     await fs.mkdir(uploads, { recursive: true });
     await fs.writeFile(path.join(uploads, name), Buffer.from(bytes));
     return `/uploads/${name}`;
+  },
+
+  async getUpload(name) {
+    try {
+      return new Uint8Array(await fs.readFile(path.join(uploads, path.basename(name))));
+    } catch {
+      return null;
+    }
   },
 };

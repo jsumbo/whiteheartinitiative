@@ -1,7 +1,8 @@
+import { appwriteConfigured, appwriteStore } from "./appwrite";
 import { fileStore } from "./files";
 
-// Content is saved to local files for now (content/*.json and public/uploads/).
-// To move to a database later, write another Store (see ./types.ts) and export it here.
-export const store = fileStore;
+// Content is saved to Appwrite when APPWRITE_ENDPOINT, APPWRITE_PROJECT_ID and APPWRITE_API_KEY are set,
+// and to local files (content/*.json and content/uploads/) otherwise.
+export const store = appwriteConfigured() ? appwriteStore : fileStore;
 
 export type { Data, Item, Store } from "./types";
