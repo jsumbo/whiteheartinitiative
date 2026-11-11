@@ -51,7 +51,7 @@ export function RichTextEditor({ id, labelId, value, onChange, describedBy, inva
   });
 
   return (
-    <div className={`mt-1 border-2 bg-white focus-within:border-forest ${invalid ? "border-red-700" : "border-stone-300"}`}>
+    <div className={`mt-1 rounded-lg border-2 bg-white focus-within:border-forest ${invalid ? "border-red-700" : "border-stone-300"}`}>
       {editor && <Toolbar editor={editor} />}
       <EditorContent editor={editor} />
     </div>
@@ -154,11 +154,11 @@ function LinkPanel({ editor, close }: { editor: Editor; close: () => void }) {
         <input id="rte-link" autoFocus className={panelInput} value={url} placeholder="https://" onChange={(e) => setUrl(e.target.value)} />
         {error && <p role="alert" className="mt-1 text-sm font-bold text-red-800">{error}</p>}
       </div>
-      <button type="button" onClick={apply} className="bg-forest px-4 py-2 font-bold text-white hover:bg-olive">Add link</button>
+      <button type="button" onClick={apply} className="rounded-lg bg-forest px-4 py-2 font-bold text-white hover:bg-olive">Add link</button>
       {editor.isActive("link") ? (
         <button
           type="button"
-          className="border-2 border-stone-300 px-4 py-1.5 font-bold text-forest"
+          className="rounded-lg border-2 border-stone-300 px-4 py-1.5 font-bold text-forest"
           onClick={() => {
             editor.chain().focus().extendMarkRange("link").unsetLink().run();
             close();
@@ -167,7 +167,7 @@ function LinkPanel({ editor, close }: { editor: Editor; close: () => void }) {
           Remove link
         </button>
       ) : (
-        <button type="button" className="border-2 border-stone-300 px-4 py-1.5 font-bold text-forest" onClick={close}>Cancel</button>
+        <button type="button" className="rounded-lg border-2 border-stone-300 px-4 py-1.5 font-bold text-forest" onClick={close}>Cancel</button>
       )}
     </div>
   );
@@ -217,7 +217,7 @@ function PhotoPanel({ editor, close }: { editor: Editor; close: () => void }) {
           // eslint-disable-next-line @next/next/no-img-element
           <img src={src} alt="" className="h-20 w-28 object-cover" />
         )}
-        <button type="button" disabled={busy} className="border-2 border-stone-300 bg-white px-4 py-1.5 font-bold text-forest hover:border-forest" onClick={() => fileRef.current?.click()}>
+        <button type="button" disabled={busy} className="rounded-lg border-2 border-stone-300 bg-white px-4 py-1.5 font-bold text-forest hover:border-forest" onClick={() => fileRef.current?.click()}>
           {busy ? "Uploading..." : src ? "Choose a different photo" : "Choose photo"}
         </button>
       </div>
@@ -230,8 +230,8 @@ function PhotoPanel({ editor, close }: { editor: Editor; close: () => void }) {
       )}
       {error && <p role="alert" className="text-sm font-bold text-red-800">{error}</p>}
       <div className="flex gap-2">
-        <button type="button" onClick={insert} disabled={!src || busy} className="bg-forest px-4 py-2 font-bold text-white hover:bg-olive disabled:opacity-50">Add photo</button>
-        <button type="button" className="border-2 border-stone-300 px-4 py-1.5 font-bold text-forest" onClick={close}>Cancel</button>
+        <button type="button" onClick={insert} disabled={!src || busy} className="rounded-lg bg-forest px-4 py-2 font-bold text-white hover:bg-olive disabled:opacity-50">Add photo</button>
+        <button type="button" className="rounded-lg border-2 border-stone-300 px-4 py-1.5 font-bold text-forest" onClick={close}>Cancel</button>
       </div>
     </div>
   );

@@ -54,7 +54,7 @@ export function ItemList({ collection, rows: initialRows, sortable, singular, pl
     router.refresh();
   }
 
-  if (rows.length === 0) return <p className="bg-stone-100 p-6 text-center">Nothing here yet. Use the button above to add a {singular}.</p>;
+  if (rows.length === 0) return <p className="rounded-xl border-2 border-dashed border-stone-300 bg-white p-6 text-center text-stone-700">Nothing here yet. Use the button above to add a {singular}.</p>;
 
   const q = query.trim().toLowerCase();
   const shown = rows.filter(
@@ -99,9 +99,9 @@ export function ItemList({ collection, rows: initialRows, sortable, singular, pl
       )}
       {sortable && !canSort && <p className="mb-3 text-sm text-stone-600">Clear the search to change the order.</p>}
       {shown.length === 0 ? (
-        <p className="bg-stone-100 p-6 text-center">No {plural} match.</p>
+        <p className="rounded-xl border-2 border-dashed border-stone-300 bg-white p-6 text-center text-stone-700">No {plural} match.</p>
       ) : (
-        <ul className="divide-y-2 divide-stone-200 border-2 border-stone-200 bg-white">
+        <ul className="divide-y divide-stone-200 overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm">
           {shown.map((row, i) => (
             <li
               key={row.id}

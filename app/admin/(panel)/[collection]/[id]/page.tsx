@@ -43,7 +43,7 @@ export default async function EditItem(props: PageProps<"/admin/[collection]/[id
           )}
         </p>
       )}
-      <div className="border-2 border-stone-200 bg-white p-4 pb-0 sm:p-6 sm:pb-0">
+      <div className="rounded-xl border border-stone-200 bg-white p-4 pb-0 shadow-sm sm:p-6 sm:pb-0">
         <Editor
           key={item.id}
           fields={def.fields}

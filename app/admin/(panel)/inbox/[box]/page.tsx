@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { InboxList } from "@/components/admin/InboxList";
 import { getInboxDef } from "@/lib/admin/inbox";
@@ -25,8 +24,7 @@ export default async function InboxPage(props: PageProps<"/admin/inbox/[box]">) 
 
   return (
     <>
-      <Link href="/admin" className="text-sm font-bold text-forest underline underline-offset-4">← All sections</Link>
-      <h1 className="mt-3 text-3xl font-black text-forest">{def.label}</h1>
+      <h1 className="text-3xl font-black text-forest">{def.label}</h1>
       <p className="mt-1 mb-6 text-stone-700">{def.description}</p>
       <InboxList box={def.name} singular={def.singular} plural={def.plural} entries={entries} />
     </>

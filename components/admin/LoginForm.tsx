@@ -27,7 +27,7 @@ export function LoginForm() {
     }
   }
 
-  const input = "mt-1 block w-full border-2 border-stone-300 px-3 py-3 text-lg focus:border-forest focus:outline-none";
+  const input = "mt-1 block w-full rounded-lg border-2 border-stone-300 px-3 py-3 text-lg focus:border-forest focus:outline-none";
   return (
     <form onSubmit={submit} className="grid gap-4">
       {error && (
@@ -43,7 +43,7 @@ export function LoginForm() {
         <label htmlFor="password" className="font-bold">Password</label>
         <input id="password" name="password" type="password" autoComplete="current-password" required className={input} />
       </div>
-      <button type="submit" disabled={busy} className="mt-2 bg-forest py-3.5 text-lg font-bold text-white hover:bg-olive disabled:opacity-60">
+      <button type="submit" disabled={busy} className="mt-2 rounded-lg bg-forest py-3.5 text-lg font-bold text-white hover:bg-olive disabled:opacity-60">
         {busy ? "Signing in..." : "Sign in"}
       </button>
     </form>

@@ -48,8 +48,7 @@ export default async function CollectionPage(props: PageProps<"/admin/[collectio
 
   return (
     <>
-      <Link href="/admin" className="text-sm font-bold text-forest underline underline-offset-4">← All sections</Link>
-      <div className="mt-3 mb-6 flex flex-wrap items-end justify-between gap-4">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-black text-forest">{def.label}</h1>
           <p className="mt-1 text-stone-700">
@@ -62,11 +61,11 @@ export default async function CollectionPage(props: PageProps<"/admin/[collectio
         </div>
         <div className="flex flex-wrap gap-2">
           {def.name === "gallery" && (
-            <Link href={`/admin/${def.name}/upload`} className="border-2 border-forest px-5 py-2.5 font-bold text-forest hover:bg-stone-50">
+            <Link href={`/admin/${def.name}/upload`} className="rounded-lg border-2 border-forest px-5 py-2.5 font-bold text-forest hover:bg-stone-50">
               Upload many photos
             </Link>
           )}
-          <Link href={`/admin/${def.name}/new`} className="bg-forest px-5 py-3 font-bold text-white hover:bg-olive">
+          <Link href={`/admin/${def.name}/new`} className="rounded-lg bg-forest px-5 py-3 font-bold text-white hover:bg-olive">
             + Add {def.singular}
           </Link>
         </div>

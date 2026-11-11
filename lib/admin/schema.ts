@@ -131,7 +131,7 @@ export const docs: DocDef[] = [
   {
     key: "projectsPage",
     label: "Projects page",
-    description: "The intro and focus areas text on the Projects page. The projects and programs themselves are under Lists.",
+    description: "The intro and focus areas text on the Projects page. The projects and programs themselves have their own sections in the menu.",
     fields: [
       { type: "textarea", name: "intro", label: "Intro text", hint: "Shown at the top of the Projects page and on the home page." },
       { type: "textarea", name: "focusIntro", label: "Focus areas intro", hint: "Shown above the three focus area cards." },

@@ -119,7 +119,7 @@ export function Editor({ fields, initial, endpoint, method, refs = {}, backTo, d
       ))}
 
       <div className="sticky bottom-0 -mx-4 flex flex-wrap items-center gap-3 border-t-2 border-stone-200 bg-white px-4 py-3 sm:-mx-6 sm:px-6">
-        <button type="submit" disabled={status.kind === "saving"} className="bg-forest px-6 py-3 font-bold text-white hover:bg-olive disabled:opacity-60">
+        <button type="submit" disabled={status.kind === "saving"} className="rounded-lg bg-forest px-6 py-3 font-bold text-white hover:bg-olive disabled:opacity-60">
           {status.kind === "saving" ? "Saving..." : method === "POST" ? "Add" : "Save changes"}
         </button>
         {deleteEndpoint && (

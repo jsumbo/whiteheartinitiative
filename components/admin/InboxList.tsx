@@ -22,7 +22,7 @@ export function InboxList({ box, singular, plural, entries: initial }: { box: st
     router.refresh();
   }
 
-  if (entries.length === 0) return <p className="bg-stone-100 p-6 text-center">No {plural} yet.</p>;
+  if (entries.length === 0) return <p className="rounded-xl border-2 border-dashed border-stone-300 bg-white p-6 text-center text-stone-700">No {plural} yet.</p>;
 
   return (
     <>
@@ -33,7 +33,7 @@ export function InboxList({ box, singular, plural, entries: initial }: { box: st
       )}
       <ul className="grid gap-3">
         {entries.map((e) => (
-          <li key={e.id} className="border-2 border-stone-200 bg-white p-4">
+          <li key={e.id} className="rounded-xl border border-stone-200 bg-white p-4 shadow-sm">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <p className="text-lg font-black text-forest">{e.name || "(no name)"}</p>
               <p className="text-sm text-stone-600">{when(e.receivedAt)}</p>

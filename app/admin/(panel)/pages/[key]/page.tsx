@@ -18,10 +18,14 @@ export default async function EditDoc(props: PageProps<"/admin/pages/[key]">) {
 
   return (
     <>
-      <Link href="/admin" className="text-sm font-bold text-forest underline underline-offset-4">← All sections</Link>
-      <h1 className="mt-3 text-3xl font-black text-forest">{def.label}</h1>
+      {def.key !== "settings" && (
+        <Link href="/admin/pages" className="mb-3 inline-block text-sm font-bold text-forest underline underline-offset-4">
+          ← All pages
+        </Link>
+      )}
+      <h1 className="text-3xl font-black text-forest">{def.label}</h1>
       <p className="mt-1 mb-6 text-stone-700">{def.description}</p>
-      <div className="border-2 border-stone-200 bg-white p-4 pb-0 sm:p-6 sm:pb-0">
+      <div className="rounded-xl border border-stone-200 bg-white p-4 pb-0 shadow-sm sm:p-6 sm:pb-0">
         <Editor key={def.key} fields={def.fields} initial={data} endpoint={`/api/admin/docs/${def.key}`} method="PUT" refs={refs} viewHref={docPaths[def.key]} />
       </div>
     </>

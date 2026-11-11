@@ -1,45 +1,157 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { inboxes } from "@/lib/admin/inbox";
-import { collections, docs } from "@/lib/admin/schema";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { Logo } from "@/components/Logo";
+import { menu } from "@/lib/admin/menu";
+import { AdminIcon } from "./AdminIcon";
 
-// Built from the schema, so new pages and lists show up here without editing this file.
-const sections = [
-  { heading: "Pages", links: docs.filter((d) => d.key !== "settings").map((d) => ({ href: `/admin/pages/${d.key}`, label: d.label })) },
-  { heading: "Lists", links: collections.map((c) => ({ href: `/admin/${c.name}`, label: c.label })) },
-  { heading: "Inbox", links: inboxes.map((b) => ({ href: `/admin/inbox/${b.name}`, label: b.label })) },
-  { heading: "Settings", links: docs.filter((d) => d.key === "settings").map((d) => ({ href: `/admin/pages/${d.key}`, label: d.label })) },
-];
+type Props = { messageCount: number };
 
-export function AdminNav() {
+// The admin side menu: a fixed sidebar on large screens and a slide-out drawer on phones and tablets.
+export function AdminNav({ messageCount }: Props) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const menuButton = useRef<HTMLButtonElement>(null);
+  const firstLink = useRef<HTMLAnchorElement>(null);
+  // Set when the drawer is closed with Escape or the close button, so focus goes back to the Menu button.
+  const restoreFocus = useRef(false);
+  const close = () => {
+    restoreFocus.current = true;
+    setOpen(false);
+  };
+
+  // Close the drawer after following a link.
+  const [lastPath, setLastPath] = useState(pathname);
+  if (pathname !== lastPath) {
+    setLastPath(pathname);
+    setOpen(false);
+  }
+
+  useEffect(() => {
+    if (!open) return;
+    // While the drawer is open, the page behind it can't be reached with the keyboard or a screen reader.
+    const behind = [document.getElementById("admin-main"), document.getElementById("admin-topbar")];
+    behind.forEach((el) => el?.setAttribute("inert", ""));
+    const button = menuButton.current;
+    firstLink.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") close();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      behind.forEach((el) => el?.removeAttribute("inert"));
+      // Only now is the Menu button reachable again.
+      if (restoreFocus.current) button?.focus();
+      restoreFocus.current = false;
+    };
+  }, [open]);
+
+  async function signOut() {
+    await fetch("/api/admin/logout", { method: "POST" });
+    router.replace("/admin/login");
+    router.refresh();
+  }
+
+  const brand = (
+    <Link href="/admin" className="flex items-center gap-3">
+      <Logo className="h-10 w-auto" />
+      <span className="rounded-md bg-gold-light/40 px-2 py-0.5 text-xs font-bold tracking-wider text-forest uppercase">Admin</span>
+    </Link>
+  );
+
   return (
-    <nav aria-label="Admin" className="overflow-x-auto border-t border-white/15 lg:flex-1 lg:overflow-y-auto">
-      <div className="flex gap-1 px-2 py-2 lg:block lg:px-3 lg:py-4">
-        {sections.map((s) => (
-          <div key={s.heading} className="contents lg:mb-5 lg:block">
-            <p className="hidden px-2 pb-1 text-xs font-bold tracking-[0.15em] text-white/60 uppercase lg:block">{s.heading}</p>
-            <ul className="contents lg:block">
-              {s.links.map((l) => {
-                const current = pathname === l.href || pathname.startsWith(l.href + "/");
-                return (
-                  <li key={l.href} className="shrink-0">
-                    <Link
-                      href={l.href}
-                      aria-current={current ? "page" : undefined}
-                      className={`block px-3 py-2 text-sm font-bold whitespace-nowrap lg:whitespace-normal ${current ? "bg-white text-forest" : "hover:bg-white/10"}`}
-                    >
-                      {l.label}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        ))}
+    <>
+      {/* Top bar on phones and tablets */}
+      <div id="admin-topbar" className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-stone-200 bg-white px-4 py-2 lg:hidden">
+        {brand}
+        <button
+          ref={menuButton}
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-expanded={open}
+          aria-controls="admin-sidebar"
+          className="flex items-center gap-2 rounded-lg border border-stone-300 px-3 py-2 text-sm font-bold text-forest hover:bg-stone-50"
+        >
+          <AdminIcon name="menu" />
+          Menu
+        </button>
       </div>
-    </nav>
+
+      {open && (
+        <button
+          type="button"
+          tabIndex={-1}
+          aria-hidden="true"
+          onClick={close}
+          className="fixed inset-0 z-40 bg-ink/40 lg:hidden"
+        />
+      )}
+
+      <aside
+        id="admin-sidebar"
+        aria-label="Admin"
+        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-stone-200 bg-white transition-transform duration-200 motion-reduce:transition-none lg:z-20 lg:w-64 lg:translate-x-0 ${
+          open ? "translate-x-0 shadow-xl" : "invisible -translate-x-full lg:visible"
+        }`}
+      >
+        <div className="flex items-center justify-between gap-3 border-b border-stone-200 px-5 py-4">
+          {brand}
+          <button
+            type="button"
+            onClick={close}
+            className="rounded-lg p-2 text-stone-600 hover:bg-stone-100 lg:hidden"
+          >
+            <AdminIcon name="close" />
+            <span className="sr-only">Close menu</span>
+          </button>
+        </div>
+
+        <nav aria-label="Admin sections" className="flex-1 overflow-y-auto px-3 py-4">
+          <ul className="grid gap-1">
+            {menu.map((item, i) => {
+              const current = item.match(pathname);
+              const count = item.badge === "messages" ? messageCount : 0;
+              return (
+                <li key={item.href}>
+                  <Link
+                    ref={i === 0 ? firstLink : undefined}
+                    href={item.href}
+                    aria-current={current ? "page" : undefined}
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 font-semibold ${
+                      current ? "bg-forest text-white shadow-sm" : "text-stone-700 hover:bg-stone-100 hover:text-forest"
+                    }`}
+                  >
+                    <AdminIcon name={item.icon} className={`size-5 ${current ? "" : "text-stone-500"}`} />
+                    <span className="flex-1">{item.label}</span>
+                    {count > 0 && (
+                      <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${current ? "bg-white text-forest" : "bg-gold-light/50 text-forest"}`}>
+                        {count}
+                        <span className="sr-only"> {count === 1 ? "message" : "messages"}</span>
+                      </span>
+                    )}
+                    {current && <AdminIcon name="chevron" className="size-4 -rotate-90" />}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+
+        <div className="grid gap-1 border-t border-stone-200 px-3 py-3">
+          <a href="/" target="_blank" rel="noopener" className="flex items-center gap-3 rounded-lg px-3 py-2.5 font-semibold text-stone-700 hover:bg-stone-100 hover:text-forest">
+            <AdminIcon name="external" className="size-5 text-stone-500" />
+            View website<span className="sr-only"> (opens in a new tab)</span>
+          </a>
+          <button type="button" onClick={signOut} className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-left font-semibold text-stone-700 hover:bg-stone-100 hover:text-forest">
+            <AdminIcon name="signout" className="size-5 text-stone-500" />
+            Sign out
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }

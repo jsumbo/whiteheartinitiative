@@ -7,7 +7,7 @@ import { smallBtn, uploadPhoto } from "./fields";
 
 type Photo = { key: string; name: string; preview: string; url?: string; alt: string; error?: string; added?: boolean };
 
-const input = "mt-1 block w-full border-2 border-stone-300 bg-white px-3 py-2.5 text-base focus:border-forest focus:outline-none";
+const input = "mt-1 block w-full rounded-lg border-2 border-stone-300 bg-white px-3 py-2.5 text-base focus:border-forest focus:outline-none";
 
 // Upload many gallery photos at once: pick them, set the date and project once, describe each photo, add.
 export function BulkPhotos({ projects }: { projects: RefOption[] }) {
@@ -103,7 +103,7 @@ export function BulkPhotos({ projects }: { projects: RefOption[] }) {
           id="bulk-files"
           onChange={(e) => e.target.files?.length && pick(e.target.files)}
         />
-        <button type="button" className="bg-forest px-5 py-3 font-bold text-white hover:bg-olive" onClick={() => fileRef.current?.click()}>
+        <button type="button" className="rounded-lg bg-forest px-5 py-3 font-bold text-white hover:bg-olive" onClick={() => fileRef.current?.click()}>
           {photos.length ? "Pick more photos" : "Pick photos"}
         </button>
       </div>
@@ -113,7 +113,7 @@ export function BulkPhotos({ projects }: { projects: RefOption[] }) {
           {photos.map((p) => {
             const missing = showMissing && p.url && !p.added && !p.alt.trim();
             return (
-              <li key={p.key} className="border-2 border-stone-200 bg-white p-3">
+              <li key={p.key} className="rounded-xl border border-stone-200 bg-white p-3 shadow-sm">
                 <div className="relative aspect-[4/3] overflow-hidden bg-stone-100">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={p.preview} alt="" className={`h-full w-full object-cover ${p.url ? "" : "opacity-50"}`} />
@@ -152,7 +152,7 @@ export function BulkPhotos({ projects }: { projects: RefOption[] }) {
 
       {photos.length > 0 && (
         <div className="sticky bottom-0 flex flex-wrap items-center gap-3 border-t-2 border-stone-200 bg-white py-3">
-          <button type="button" disabled={busy || uploading || !ready} onClick={addAll} className="bg-forest px-6 py-3 font-bold text-white hover:bg-olive disabled:opacity-60">
+          <button type="button" disabled={busy || uploading || !ready} onClick={addAll} className="rounded-lg bg-forest px-6 py-3 font-bold text-white hover:bg-olive disabled:opacity-60">
             {busy ? "Adding..." : uploading ? "Uploading..." : `Add ${ready} ${ready === 1 ? "photo" : "photos"} to the gallery`}
           </button>
           <p role="status" aria-live="polite" className="font-bold text-red-800">

@@ -24,7 +24,7 @@ export default async function NewItem(props: PageProps<"/admin/[collection]/new"
     <>
       <Link href={`/admin/${def.name}`} className="text-sm font-bold text-forest underline underline-offset-4">← {def.label}</Link>
       <h1 className="mt-3 mb-6 text-3xl font-black text-forest">Add {def.singular}</h1>
-      <div className="border-2 border-stone-200 bg-white p-4 pb-0 sm:p-6 sm:pb-0">
+      <div className="rounded-xl border border-stone-200 bg-white p-4 pb-0 shadow-sm sm:p-6 sm:pb-0">
         <Editor fields={def.fields} initial={initial} endpoint={`/api/admin/items/${def.name}`} method="POST" refs={refs} backTo={`/admin/${def.name}`} />
       </div>
     </>

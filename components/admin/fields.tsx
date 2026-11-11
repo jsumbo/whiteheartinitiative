@@ -15,9 +15,9 @@ const RichTextEditor = dynamic(() => import("./RichTextEditor").then((m) => m.Ri
 });
 
 const input =
-  "mt-1 block w-full border-2 border-stone-300 bg-white px-3 py-2.5 text-base text-ink focus:border-forest focus:outline-none aria-invalid:border-red-700";
+  "mt-1 block w-full rounded-lg border-2 border-stone-300 bg-white px-3 py-2.5 text-base text-ink focus:border-forest focus:outline-none aria-invalid:border-red-700";
 export const smallBtn =
-  "border-2 border-stone-300 bg-white px-3 py-1.5 text-sm font-bold text-forest hover:border-forest disabled:opacity-40";
+  "rounded-lg border-2 border-stone-300 bg-white px-3 py-1.5 text-sm font-bold text-forest hover:border-forest disabled:opacity-40";
 const handleCls = "hidden cursor-grab touch-none px-1 text-xl leading-none text-stone-400 select-none hover:text-forest sm:block";
 const dropCls = "data-drop-target:outline-2 data-drop-target:outline-dashed data-drop-target:outline-forest";
 
@@ -135,7 +135,7 @@ export function FieldInput({
       return wrap(<RefSelect control={control} options={refs[field.collection] ?? []} emptyLabel={field.emptyLabel} value={value} onChange={onChange} />);
     case "group":
       return (
-        <fieldset className="border-2 border-stone-200 p-4">
+        <fieldset className="rounded-xl border-2 border-stone-200 p-4">
           <legend className="px-1 text-base font-bold">{field.label}</legend>
           <Hint id={hintId} text={field.hint} />
           <div className="mt-3 grid gap-4">
@@ -358,7 +358,7 @@ function GroupListInput({
       <Hint id={`${id}-hint`} text={field.hint} />
       <ol className="mt-3 grid gap-4">
         {value.map((group, i) => (
-          <li key={i} {...sort.item(i)} className={`border-2 border-stone-200 bg-stone-50 p-4 ${dropCls}`}>
+          <li key={i} {...sort.item(i)} className={`rounded-lg border-2 border-stone-200 bg-stone-50 p-4 ${dropCls}`}>
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
               <p className="flex items-center gap-2 font-bold text-forest">
                 <span {...sort.handle(i)} aria-hidden="true" title="Drag to move" className={handleCls}>
